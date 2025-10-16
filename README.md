@@ -1,22 +1,30 @@
-# Overview
+# Scale Survey
 
-Scale Survey is a minimalist survey application designed to let users create and manage live surveys. These surveys can be distributed to participants through unique short URLs.
+A minimalist survey application that enables users to create and manage live surveys with real-time results.
 
-- The production website is available at [www.scalesurvey.com](https://www.scalesurvey.com)
-- No authentication required - anyone can create a survey
-- Survey creators receive a secret code upon creation for admin access to manage their survey
-- Each survey receives a dedicated short URL in the format `<survey-id>.scalesurvey.com`
-- Survey owners can choose whether participants are able to view live survey results on the survey page
-- Every survey has configurable start and end dates set before launch
-- Survey owners can save surveys as drafts and publish them when ready
+## Features
+
+- ✅ **No Sign-Up Required** - Create surveys instantly without authentication
+- ✅ **5 Question Types** - Single choice, multiple choice, text, star rating, and numeric scale
+- ✅ **Drag-and-Drop** - Reorder questions easily during survey creation
+- ✅ **Admin Access** - Receive a secret code for survey management
+- ✅ **Live Results** - Optional real-time results viewing for participants
+- ✅ **Survey Scheduling** - Configure start and end dates
+- ✅ **Draft & Publish** - Save surveys as drafts and publish when ready
+- ✅ **CSV Export** - Download survey responses
+- ✅ **Dark Mode** - Full dark mode support
+- ✅ **Real-time Updates** - Live response updates using Convex subscriptions
 
 ## Tech Stack
 
 - **Framework:** Next.js 15 with App Router
 - **Runtime:** Bun
-- **Database:** Convex (real-time backend with TypeScript)
-- **UI Library:** shadcn/ui
 - **Language:** TypeScript (strict mode)
+- **Database:** Convex (real-time backend)
+- **Styling:** Tailwind CSS v4
+- **UI Library:** shadcn/ui (New York style)
+- **Icons:** lucide-react
+- **Drag & Drop:** @dnd-kit
 
 ## Getting Started
 
@@ -31,12 +39,44 @@ bunx convex dev
 bun dev
 ```
 
-**Important:** You need to run both the Convex dev server (`bunx convex dev`) and the Next.js dev server (`bun dev`) in separate terminals during development. The Convex dev server watches for changes to your database schema and backend functions, automatically syncing them and regenerating TypeScript types.
+**Important:** You need to run both the Convex dev server and the Next.js dev server in separate terminals during development. The Convex dev server watches for changes to your database schema and backend functions.
 
-## Development Guidelines
+## Project Structure
 
-- Use [bun](https://bun.sh/) as the package manager
-- Use [Convex](https://convex.dev/) for all database operations and real-time functionality
-- Run `bunx convex dev` in a separate terminal during development
-- Use [shadcn/ui](https://ui.shadcn.com/) as the component library; UI components are located at `@/components/ui`
-- Follow the [Next.js App Router](https://nextjs.org/docs/app) architecture
+```
+src/
+├── app/              # Next.js App Router pages
+│   ├── page.tsx      # Landing page
+│   ├── create/       # Survey creation
+│   ├── access/       # Admin access
+│   ├── survey/[key]/ # Participant views
+│   └── admin/[code]/ # Admin dashboard
+├── components/
+│   ├── questions/    # Question type components (modular)
+│   ├── survey-builder/ # Survey creation UI
+│   └── landing/      # Landing page components
+├── lib/
+│   └── questions/    # Question type registry
+└── types/
+    └── questions.ts  # Type definitions
+
+convex/              # Backend (Convex)
+├── schema.ts        # Database schema
+├── surveys.ts       # Survey operations
+├── questions.ts     # Question operations
+└── responses.ts     # Response operations
+```
+
+## Development
+
+See [CLAUDE.md](./CLAUDE.md) for detailed development guidelines and architecture documentation.
+
+## Current Status
+
+🎉 **MVP Complete!** All core features are fully implemented and tested.
+
+See [TODO.md](./TODO.md) for detailed completion status.
+
+## License
+
+MIT

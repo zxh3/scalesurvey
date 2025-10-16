@@ -154,3 +154,43 @@
 - Store question configs and answers as JSON strings
 - Use nanoid for generating survey keys
 - Follow existing modular architecture for new question types
+
+---
+
+## Work Log
+
+This section tracks recent development work. Update as you work on the project.
+
+### 2025-01-16: UI Polish & Navigation
+
+**Completed:**
+- ✅ Added reusable SiteHeader component with logo and theme toggle
+- ✅ Implemented navigation - click "Scale Survey" logo to return home
+- ✅ Standardized header across all pages (home, /create, /access)
+- ✅ Fixed header spacing with equal margins for title and theme toggle
+- ✅ Added smooth scrolling when new questions are added
+- ✅ Updated documentation (CLAUDE.md, README.md, TODO.md)
+
+**Commits:**
+- `fe7517f` - Add site header with navigation to home
+- `156941c` - Improve site header spacing and add hover effect
+- `6a7902d` - Standardize header across all pages with centered title option
+- `87d91c2` - Simplify header with equal margins on both sides
+- `4cd954b` - Add smooth scrolling when new questions are added
+
+### 2025-01-15: Question Types Implementation
+
+**Completed:**
+- ✅ Implemented text question type (editor, response, results)
+- ✅ Implemented rating question type (3-10 configurable stars)
+- ✅ Implemented scale question type (custom numeric range)
+- ✅ Fixed success modal URL display and navigation
+- ✅ All 5 question types working in survey builder
+
+**Commits:**
+- `e27babd` - Add text question type and improve success modal
+- `72a6e81` - Add rating question type and fix text question type
+- `10f28f2` - Add scale question type
+- `a2be4a0` - Update TODO with MVP completion status
+- `a913d7e` - Clean up TODO.md - remove future phases
+- `baace89` - Remove 'Not Yet Implemented' section from TODO
