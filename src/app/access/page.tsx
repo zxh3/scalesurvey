@@ -53,7 +53,7 @@ export default function AccessPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader centerTitle />
+      <SiteHeader />
       <div className="flex items-center justify-center p-4 min-h-[calc(100vh-3.5rem)]">
         <Card className="max-w-md w-full">
         <CardHeader>
