@@ -22,7 +22,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getSurveyBySurveyId, saveSurvey, updateSurveyAccess } from "@/lib/db";
+import {
+  getSurveyBySurveyId,
+  saveSurvey,
+  updateSurveyAccess,
+  updateSurveyStatus,
+} from "@/lib/db";
 import { api } from "../../../../convex/_generated/api";
 
 export default function AdminDashboardPage() {
@@ -57,8 +62,8 @@ export default function AdminDashboardPage() {
         const existingSurvey = await getSurveyBySurveyId(survey._id);
 
         if (existingSurvey) {
-          // Survey exists, just update the last accessed time
-          await updateSurveyAccess(survey._id);
+          // Survey exists, update the last accessed time and status
+          await updateSurveyStatus(survey._id, survey.status);
         } else {
           // Survey doesn't exist, save it
           await saveSurvey({

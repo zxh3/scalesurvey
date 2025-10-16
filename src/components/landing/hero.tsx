@@ -98,7 +98,7 @@ export function Hero() {
               className="text-lg h-12 px-8 min-w-[260px]"
               asChild
             >
-              <Link href="/access">Access Existing Survey</Link>
+              <Link href="/surveys">My Surveys</Link>
             </Button>
           </motion.div>
         </motion.div>
