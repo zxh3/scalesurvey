@@ -26,7 +26,7 @@
 - Live results for participants (/survey/[key]/results)
 - Real-time updates using Convex subscriptions
 
-### 🚧 Not Yet Implemented (Polish & Future Features)
+---
 
 ## Phase 1: Complete Survey Creation Flow ✅ COMPLETED
 
