@@ -1,52 +1,52 @@
 import { AlignLeft } from "lucide-react";
 import {
-  QuestionTypeDefinition,
-  textConfigSchema,
-  TextConfig,
+	type QuestionTypeDefinition,
+	textConfigSchema,
+	type TextConfig,
 } from "@/types/questions";
 import { TextEditor } from "./text-editor";
 import { TextResponse } from "./text-response";
 import { TextResults } from "./text-results";
 
 export const textQuestionType: QuestionTypeDefinition = {
-  type: "text",
-  label: "Text Response",
-  icon: AlignLeft,
-  description: "Open-ended text input",
+	type: "text",
+	label: "Text Response",
+	icon: AlignLeft,
+	description: "Open-ended text input",
 
-  EditorComponent: TextEditor,
-  ResponseComponent: TextResponse,
-  ResultsComponent: TextResults,
+	EditorComponent: TextEditor,
+	ResponseComponent: TextResponse,
+	ResultsComponent: TextResults,
 
-  defaultConfig: () => ({
-    placeholder: "",
-    maxLength: undefined,
-  }),
+	defaultConfig: () => ({
+		placeholder: "",
+		maxLength: undefined,
+	}),
 
-  configSchema: textConfigSchema,
+	configSchema: textConfigSchema,
 
-  validate: (question, value) => {
-    const config = question.config as TextConfig;
-    const textValue = (value as string) || "";
+	validate: (question, value) => {
+		const config = question.config as TextConfig;
+		const textValue = (value as string) || "";
 
-    // Check if required (not optional)
-    if (!question.optional && !textValue.trim()) {
-      return { valid: false, error: "This question is required" };
-    }
+		// Check if required (not optional)
+		if (!question.optional && !textValue.trim()) {
+			return { valid: false, error: "This question is required" };
+		}
 
-    // If optional and no value, that's ok
-    if (!textValue.trim()) {
-      return { valid: true };
-    }
+		// If optional and no value, that's ok
+		if (!textValue.trim()) {
+			return { valid: true };
+		}
 
-    // Check max length
-    if (config.maxLength && textValue.length > config.maxLength) {
-      return {
-        valid: false,
-        error: `Text must be at most ${config.maxLength} characters`,
-      };
-    }
+		// Check max length
+		if (config.maxLength && textValue.length > config.maxLength) {
+			return {
+				valid: false,
+				error: `Text must be at most ${config.maxLength} characters`,
+			};
+		}
 
-    return { valid: true };
-  },
+		return { valid: true };
+	},
 };
