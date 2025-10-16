@@ -81,6 +81,12 @@ export interface QuestionResultsProps {
   responses: any[];
 }
 
+// Validation result type
+export interface ValidationResult {
+  valid: boolean;
+  error?: string;
+}
+
 // Question type definition for registry
 export interface QuestionTypeDefinition {
   type: QuestionType;
@@ -102,6 +108,9 @@ export interface QuestionTypeDefinition {
 
   // Validation schema for config
   configSchema: z.ZodSchema;
+
+  // Validation function for response values
+  validate: (question: BaseQuestion, value: any) => ValidationResult;
 }
 
 // Validation schemas

@@ -1,5 +1,9 @@
 import { Star } from "lucide-react";
-import { QuestionTypeDefinition, ratingConfigSchema } from "@/types/questions";
+import {
+  QuestionTypeDefinition,
+  ratingConfigSchema,
+  RatingConfig,
+} from "@/types/questions";
 import { RatingEditor } from "./rating-editor";
 import { RatingResponse } from "./rating-response";
 import { RatingResults } from "./rating-results";
@@ -19,4 +23,29 @@ export const ratingQuestionType: QuestionTypeDefinition = {
   }),
 
   configSchema: ratingConfigSchema,
+
+  validate: (question, value) => {
+    const config = question.config as RatingConfig;
+    const rating = value as number;
+
+    // Check required
+    if (question.required && !rating) {
+      return { valid: false, error: "This question is required" };
+    }
+
+    // If not required and no value, that's ok
+    if (!rating) {
+      return { valid: true };
+    }
+
+    // Check range
+    if (rating < 1 || rating > config.maxRating) {
+      return {
+        valid: false,
+        error: `Rating must be between 1 and ${config.maxRating}`,
+      };
+    }
+
+    return { valid: true };
+  },
 };

@@ -1,5 +1,9 @@
 import { AlignLeft } from "lucide-react";
-import { QuestionTypeDefinition, textConfigSchema } from "@/types/questions";
+import {
+  QuestionTypeDefinition,
+  textConfigSchema,
+  TextConfig,
+} from "@/types/questions";
 import { TextEditor } from "./text-editor";
 import { TextResponse } from "./text-response";
 import { TextResults } from "./text-results";
@@ -20,4 +24,29 @@ export const textQuestionType: QuestionTypeDefinition = {
   }),
 
   configSchema: textConfigSchema,
+
+  validate: (question, value) => {
+    const config = question.config as TextConfig;
+    const textValue = (value as string) || "";
+
+    // Check required
+    if (question.required && !textValue.trim()) {
+      return { valid: false, error: "This question is required" };
+    }
+
+    // If not required and no value, that's ok
+    if (!textValue.trim()) {
+      return { valid: true };
+    }
+
+    // Check max length
+    if (config.maxLength && textValue.length > config.maxLength) {
+      return {
+        valid: false,
+        error: `Text must be at most ${config.maxLength} characters`,
+      };
+    }
+
+    return { valid: true };
+  },
 };

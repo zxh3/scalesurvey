@@ -80,9 +80,20 @@ export default function SurveyPage() {
 
     const newErrors: Record<string, string> = {};
 
-    questions.forEach((question) => {
-      if (question.required && !answers[question._id]) {
-        newErrors[question._id] = "This question is required";
+    // Parse questions with configs
+    const parsedQuestions: BaseQuestion[] = questions.map((q) => ({
+      ...q,
+      config: JSON.parse(q.config),
+    }));
+
+    // Validate each question using its type-specific validation function
+    parsedQuestions.forEach((question) => {
+      const questionDef = questionTypeRegistry.get(question.type);
+      if (!questionDef) return;
+
+      const result = questionDef.validate(question, answers[question._id]);
+      if (!result.valid) {
+        newErrors[question._id] = result.error || "Invalid answer";
       }
     });
 
