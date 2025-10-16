@@ -88,7 +88,11 @@ export function HowItWorks() {
                       <motion.div
                         className="relative"
                         whileHover={{ scale: 1.1, rotate: 5 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 10,
+                        }}
                       >
                         {/* Animated gradient background - more subtle */}
                         <motion.div
@@ -105,7 +109,10 @@ export function HowItWorks() {
 
                         {/* Badge container */}
                         <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-border/50 bg-background/90 backdrop-blur-sm">
-                          <Icon className="h-8 w-8 text-primary" strokeWidth={2} />
+                          <Icon
+                            className="h-8 w-8 text-primary"
+                            strokeWidth={2}
+                          />
                         </div>
 
                         {/* Number indicator */}
@@ -114,7 +121,10 @@ export function HowItWorks() {
                           initial={{ scale: 0 }}
                           whileInView={{ scale: 1 }}
                           viewport={{ once: true }}
-                          transition={{ delay: index * 0.2 + 0.3, type: "spring" }}
+                          transition={{
+                            delay: index * 0.2 + 0.3,
+                            type: "spring",
+                          }}
                         >
                           {step.number}
                         </motion.div>

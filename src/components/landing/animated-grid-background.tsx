@@ -1,6 +1,12 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from "framer-motion";
+import {
+  type MotionValue,
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { useEffect } from "react";
 
 // Separate component for a single particle
@@ -44,7 +50,13 @@ function MouseReactiveParticle({
 }
 
 // Container for mouse-reactive particles
-function MouseReactiveParticles({ mouseX, mouseY }: { mouseX: MotionValue<number>; mouseY: MotionValue<number> }) {
+function MouseReactiveParticles({
+  mouseX,
+  mouseY,
+}: {
+  mouseX: MotionValue<number>;
+  mouseY: MotionValue<number>;
+}) {
   return (
     <>
       {Array.from({ length: 20 }).map((_, i) => {
@@ -98,7 +110,10 @@ export function AnimatedGridBackground() {
   }, [mouseX, mouseY]);
 
   return (
-    <div className="absolute inset-0 -z-10 overflow-hidden" style={{ perspective: "1000px" }}>
+    <div
+      className="absolute inset-0 -z-10 overflow-hidden"
+      style={{ perspective: "1000px" }}
+    >
       {/* Base grid pattern with 3D transform - mouse interactive */}
       <motion.div
         className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]"

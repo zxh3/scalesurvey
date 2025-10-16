@@ -12,13 +12,26 @@ export interface LocalSurvey {
   lastAccessedAt: number;
 }
 
+export interface SurveySubmission {
+  id?: number;
+  surveyId: string;
+  fingerprint: string;
+  submittedAt: number;
+}
+
 export class SurveyDatabase extends Dexie {
   surveys!: Table<LocalSurvey>;
+  submissions!: Table<SurveySubmission>;
 
   constructor() {
     super("ScaleSurveyDB");
     this.version(1).stores({
       surveys: "++id, surveyId, adminCode, key, lastAccessedAt, createdAt",
+    });
+    // Version 2: Add submissions table
+    this.version(2).stores({
+      surveys: "++id, surveyId, adminCode, key, lastAccessedAt, createdAt",
+      submissions: "++id, surveyId, fingerprint, submittedAt",
     });
   }
 }
@@ -78,4 +91,28 @@ export async function deleteSurvey(surveyId: string): Promise<void> {
   if (survey?.id) {
     await db.surveys.delete(survey.id);
   }
+}
+
+// Submission tracking functions
+export async function recordSubmission(
+  surveyId: string,
+  fingerprint: string,
+): Promise<number> {
+  return await db.submissions.add({
+    surveyId,
+    fingerprint,
+    submittedAt: Date.now(),
+  });
+}
+
+export async function hasSubmitted(
+  surveyId: string,
+  fingerprint: string,
+): Promise<boolean> {
+  const submission = await db.submissions
+    .where("surveyId")
+    .equals(surveyId)
+    .and((s) => s.fingerprint === fingerprint)
+    .first();
+  return !!submission;
 }

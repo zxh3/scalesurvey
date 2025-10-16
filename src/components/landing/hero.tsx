@@ -7,7 +7,10 @@ import { AnimatedGridBackground } from "./animated-grid-background";
 
 export function Hero() {
   return (
-    <section className="relative flex flex-col items-center justify-center min-h-[70vh] px-4 text-center overflow-hidden pb-8" style={{ perspective: "1500px" }}>
+    <section
+      className="relative flex flex-col items-center justify-center min-h-[70vh] px-4 text-center overflow-hidden pb-8"
+      style={{ perspective: "1500px" }}
+    >
       <AnimatedGridBackground />
       <motion.div
         className="max-w-3xl space-y-6 relative z-10"
@@ -20,12 +23,12 @@ export function Hero() {
           className="space-y-2"
           animate={{
             rotateX: [0, 1, 0, -1, 0],
-            z: [0, 10, 0, 10, 0]
+            z: [0, 10, 0, 10, 0],
           }}
           transition={{
             duration: 8,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         >
           <motion.p
@@ -68,11 +71,15 @@ export function Hero() {
               scale: 1.05,
               z: 20,
               rotateX: 5,
-              transition: { duration: 0.2 }
+              transition: { duration: 0.2 },
             }}
             whileTap={{ scale: 0.98 }}
           >
-            <Button size="lg" className="text-lg h-12 px-8 min-w-[260px]" asChild>
+            <Button
+              size="lg"
+              className="text-lg h-12 px-8 min-w-[260px]"
+              asChild
+            >
               <Link href="/create">Create Survey</Link>
             </Button>
           </motion.div>
@@ -81,7 +88,7 @@ export function Hero() {
               scale: 1.05,
               z: 20,
               rotateX: 5,
-              transition: { duration: 0.2 }
+              transition: { duration: 0.2 },
             }}
             whileTap={{ scale: 0.98 }}
           >

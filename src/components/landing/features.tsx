@@ -35,13 +35,23 @@ const features = [
   },
 ];
 
-function FeatureCard({ feature, index }: { feature: typeof features[0]; index: number }) {
+function FeatureCard({
+  feature,
+  index,
+}: {
+  feature: (typeof features)[0];
+  index: number;
+}) {
   const cardRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [5, -5]), { damping: 20 });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-5, 5]), { damping: 20 });
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [5, -5]), {
+    damping: 20,
+  });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-5, 5]), {
+    damping: 20,
+  });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -85,13 +95,16 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
         {/* Glassmorphic card */}
         <div className="relative h-full rounded-2xl border border-border/50 bg-background/50 backdrop-blur-xl p-6 overflow-hidden">
           {/* Subtle gradient background */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+          />
 
           {/* Animated border glow - more subtle */}
           <motion.div
             className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
             style={{
-              background: "linear-gradient(45deg, transparent 30%, rgba(120, 119, 198, 0.05) 50%, transparent 70%)",
+              background:
+                "linear-gradient(45deg, transparent 30%, rgba(120, 119, 198, 0.05) 50%, transparent 70%)",
               backgroundSize: "200% 200%",
             }}
             animate={{
@@ -167,7 +180,8 @@ export function Features() {
             Everything you need to run surveys
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Simple, powerful features designed for quick survey creation and real-time insights
+            Simple, powerful features designed for quick survey creation and
+            real-time insights
           </p>
         </motion.div>
 

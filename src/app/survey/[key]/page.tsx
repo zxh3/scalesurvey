@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "convex/react";
-import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, Info, XCircle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { hasSubmitted, recordSubmission } from "@/lib/db";
+import { getFingerprint } from "@/lib/fingerprint";
 import { questionTypeRegistry } from "@/lib/questions/init";
 import type { BaseQuestion } from "@/types/questions";
 import { api } from "../../../../convex/_generated/api";
@@ -23,7 +25,8 @@ type SurveyStatus =
   | "not_started"
   | "ended"
   | "active"
-  | "submitted";
+  | "submitted"
+  | "already_submitted";
 
 export default function SurveyPage() {
   const params = useParams();
@@ -41,6 +44,28 @@ export default function SurveyPage() {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [fingerprint, setFingerprint] = useState<string>("");
+
+  // Check if user has already submitted
+  useEffect(() => {
+    const checkSubmission = async () => {
+      if (!survey || survey === null) return;
+
+      try {
+        const fp = await getFingerprint();
+        setFingerprint(fp);
+
+        const submitted = await hasSubmitted(survey._id, fp);
+        if (submitted) {
+          setStatus("already_submitted");
+        }
+      } catch (error) {
+        console.error("Failed to check submission:", error);
+      }
+    };
+
+    checkSubmission();
+  }, [survey]);
 
   useEffect(() => {
     if (survey === undefined) {
@@ -74,8 +99,11 @@ export default function SurveyPage() {
       return;
     }
 
-    setStatus("active");
-  }, [survey]);
+    // Don't override already_submitted status
+    if (status !== "already_submitted") {
+      setStatus("active");
+    }
+  }, [survey, status]);
 
   const handleAnswerChange = (questionId: string, value: any) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -132,6 +160,11 @@ export default function SurveyPage() {
         surveyId: survey._id,
         answers: JSON.stringify(formattedAnswers),
       });
+
+      // Record submission in local DB
+      if (fingerprint) {
+        await recordSubmission(survey._id, fingerprint);
+      }
 
       setStatus("submitted");
     } catch (error) {
@@ -241,6 +274,43 @@ export default function SurveyPage() {
           <CardContent>
             <CardDescription>
               This survey is no longer accepting responses.
+            </CardDescription>
+            {survey?.allowLiveResults && (
+              <Button
+                className="mt-4 w-full"
+                onClick={() => router.push(`/survey/${key}/results`)}
+              >
+                View Results
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              className="mt-2 w-full"
+              onClick={() => router.push("/")}
+            >
+              Go to Home
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Already submitted state
+  if (status === "already_submitted") {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardHeader>
+            <div className="flex items-center gap-2 text-blue-600">
+              <Info className="h-5 w-5" />
+              <CardTitle>Already Submitted</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              You have already submitted a response to this survey. Multiple
+              submissions are not allowed.
             </CardDescription>
             {survey?.allowLiveResults && (
               <Button
