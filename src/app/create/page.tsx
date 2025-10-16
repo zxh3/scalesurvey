@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { BaseQuestion } from "@/types/questions";
 import { Save, Send } from "lucide-react";
 import { SuccessModal } from "@/components/survey-builder/success-modal";
+import { SiteHeader } from "@/components/site-header";
 
 // Import question registry initialization
 import "@/lib/questions/init";
@@ -160,6 +161,7 @@ export default function CreateSurveyPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SiteHeader />
       <div className="container max-w-5xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-8">
