@@ -18,6 +18,8 @@ import "@/lib/questions/init";
 export default function CreateSurveyPage() {
   const router = useRouter();
   const createSurvey = useMutation(api.surveys.create);
+  const addQuestion = useMutation(api.questions.add);
+  const publishSurvey = useMutation(api.surveys.publish);
 
   // Survey state
   const [title, setTitle] = useState("");
@@ -36,6 +38,32 @@ export default function CreateSurveyPage() {
   } | null>(null);
 
   const [isSaving, setIsSaving] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  const validateQuestions = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    questions.forEach((question, index) => {
+      if (!question.title.trim()) {
+        errors[`question-${index}-title`] = "Question title is required";
+      }
+
+      if (question.type === "single_choice" || question.type === "multiple_choice") {
+        const config = question.config as any;
+        if (!config.options || config.options.length < 2) {
+          errors[`question-${index}-options`] = "At least 2 options are required";
+        } else {
+          const emptyOptions = config.options.filter((opt: any) => !opt.text.trim());
+          if (emptyOptions.length > 0) {
+            errors[`question-${index}-options`] = "All options must have text";
+          }
+        }
+      }
+    });
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSaveDraft = async () => {
     if (!title.trim()) {
@@ -49,6 +77,8 @@ export default function CreateSurveyPage() {
         title: title.trim(),
         description: description.trim() || undefined,
         allowLiveResults,
+        startDate: startDate?.getTime(),
+        endDate: endDate?.getTime(),
       });
 
       setCreatedSurvey({
@@ -76,10 +106,56 @@ export default function CreateSurveyPage() {
       return;
     }
 
-    // TODO: Validate all questions have required fields
-    // TODO: Save questions and publish survey
+    if (!validateQuestions()) {
+      alert("Please fix validation errors before publishing");
+      return;
+    }
 
-    alert("Publish functionality coming soon!");
+    setIsSaving(true);
+    try {
+      // 1. Create the survey
+      const result = await createSurvey({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        allowLiveResults,
+        startDate: startDate?.getTime(),
+        endDate: endDate?.getTime(),
+      });
+
+      const surveyId = result.surveyId as string;
+      const adminCode = result.adminCode;
+
+      // 2. Save all questions
+      for (const question of questions) {
+        await addQuestion({
+          surveyId,
+          adminCode,
+          type: question.type,
+          title: question.title,
+          description: question.description,
+          required: question.required,
+          config: JSON.stringify(question.config),
+        });
+      }
+
+      // 3. Publish the survey
+      await publishSurvey({
+        surveyId,
+        adminCode,
+      });
+
+      setCreatedSurvey({
+        surveyId,
+        adminCode,
+        key: result.key,
+      });
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("Failed to publish survey:", error);
+      alert("Failed to publish survey. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (

@@ -24,6 +24,8 @@ export const create = mutation({
     title: v.string(),
     description: v.optional(v.string()),
     allowLiveResults: v.optional(v.boolean()),
+    startDate: v.optional(v.number()),
+    endDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -37,6 +39,8 @@ export const create = mutation({
       adminCode,
       key,
       status: "draft",
+      startDate: args.startDate,
+      endDate: args.endDate,
       allowLiveResults: args.allowLiveResults ?? false,
       createdAt: now,
       updatedAt: now,

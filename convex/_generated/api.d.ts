@@ -9,6 +9,7 @@
  */
 
 import type * as questions from "../questions.js";
+import type * as responses from "../responses.js";
 import type * as surveys from "../surveys.js";
 import type * as tasks from "../tasks.js";
 
@@ -28,6 +29,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   questions: typeof questions;
+  responses: typeof responses;
   surveys: typeof surveys;
   tasks: typeof tasks;
 }>;
