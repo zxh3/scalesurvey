@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { AlertCircle, CheckCircle2, Clock, Info, XCircle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,6 +28,38 @@ type SurveyStatus =
   | "submitted"
   | "already_submitted";
 
+// Helper component for status messages
+function StatusMessage({
+  icon: Icon,
+  title,
+  description,
+  iconColor = "text-muted-foreground",
+  buttons,
+}: {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  iconColor?: string;
+  buttons?: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="max-w-md w-full">
+        <CardHeader>
+          <div className={`flex items-center gap-2 ${iconColor}`}>
+            <Icon className="h-5 w-5" />
+            <CardTitle>{title}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <CardDescription>{description}</CardDescription>
+          {buttons}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function SurveyPage() {
   const params = useParams();
   const router = useRouter();
@@ -41,10 +73,19 @@ export default function SurveyPage() {
   const submitResponse = useMutation(api.responses.submit);
 
   const [status, setStatus] = useState<SurveyStatus>("loading");
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [fingerprint, setFingerprint] = useState<string>("");
+
+  // Parse questions with configs (memoized to avoid repeated parsing)
+  const parsedQuestions = useMemo<BaseQuestion[]>(() => {
+    if (!questions) return [];
+    return questions.map((q) => ({
+      ...q,
+      config: JSON.parse(q.config),
+    }));
+  }, [questions]);
 
   // Check if user has already submitted
   useEffect(() => {
@@ -99,13 +140,13 @@ export default function SurveyPage() {
       return;
     }
 
-    // Don't override already_submitted status
-    if (status !== "already_submitted") {
+    // Don't override already_submitted or submitted status
+    if (status !== "already_submitted" && status !== "submitted") {
       setStatus("active");
     }
   }, [survey, status]);
 
-  const handleAnswerChange = (questionId: string, value: any) => {
+  const handleAnswerChange = (questionId: string, value: unknown) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
     // Clear error for this question
     setErrors((prev) => {
@@ -116,15 +157,9 @@ export default function SurveyPage() {
   };
 
   const validateAnswers = (): boolean => {
-    if (!questions) return false;
+    if (parsedQuestions.length === 0) return false;
 
     const newErrors: Record<string, string> = {};
-
-    // Parse questions with configs
-    const parsedQuestions: BaseQuestion[] = questions.map((q) => ({
-      ...q,
-      config: JSON.parse(q.config),
-    }));
 
     // Validate each question using its type-specific validation function
     parsedQuestions.forEach((question) => {
@@ -141,8 +176,15 @@ export default function SurveyPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Helper to record submission in local DB
+  const recordLocalSubmission = async () => {
+    if (fingerprint && survey) {
+      await recordSubmission(survey._id, fingerprint);
+    }
+  };
+
   const handleSubmit = async () => {
-    if (!validateAnswers() || !survey) {
+    if (!validateAnswers() || !survey || isSubmitting) {
       return;
     }
 
@@ -159,19 +201,31 @@ export default function SurveyPage() {
       await submitResponse({
         surveyId: survey._id,
         answers: JSON.stringify(formattedAnswers),
+        participantFingerprint: fingerprint,
       });
 
-      // Record submission in local DB
-      if (fingerprint) {
-        await recordSubmission(survey._id, fingerprint);
-      }
+      // Record submission in local DB for future visits
+      await recordLocalSubmission();
 
       setStatus("submitted");
+      // Keep button disabled - status change will hide the form
     } catch (error) {
       console.error("Failed to submit response:", error);
-      alert("Failed to submit response. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+
+      // Check if this is a duplicate submission error
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const isDuplicateError = errorMessage.includes("already submitted");
+
+      if (isDuplicateError) {
+        // Treat duplicate submission as success
+        await recordLocalSubmission();
+        setStatus("submitted");
+      } else {
+        // Show error for other types of failures
+        setIsSubmitting(false);
+        alert("Failed to submit response. Please try again.");
+      }
     }
   };
 
@@ -190,91 +244,61 @@ export default function SurveyPage() {
   // Not found state
   if (status === "not_found") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <div className="flex items-center gap-2 text-destructive">
-              <XCircle className="h-5 w-5" />
-              <CardTitle>Survey Not Found</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              The survey you're looking for doesn't exist or has been removed.
-            </CardDescription>
-            <Button className="mt-4 w-full" onClick={() => router.push("/")}>
-              Go to Home
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <StatusMessage
+        icon={XCircle}
+        title="Survey Not Found"
+        description="The survey you're looking for doesn't exist or has been removed."
+        iconColor="text-destructive"
+        buttons={
+          <Button className="mt-4 w-full" onClick={() => router.push("/")}>
+            Go to Home
+          </Button>
+        }
+      />
     );
   }
 
   // Draft state
   if (status === "draft") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <AlertCircle className="h-5 w-5" />
-              <CardTitle>Survey Not Published</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              This survey hasn't been published yet. Please check back later.
-            </CardDescription>
-            <Button className="mt-4 w-full" onClick={() => router.push("/")}>
-              Go to Home
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <StatusMessage
+        icon={AlertCircle}
+        title="Survey Not Published"
+        description="This survey hasn't been published yet. Please check back later."
+        buttons={
+          <Button className="mt-4 w-full" onClick={() => router.push("/")}>
+            Go to Home
+          </Button>
+        }
+      />
     );
   }
 
   // Not started state
   if (status === "not_started" && survey?.startDate) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="h-5 w-5" />
-              <CardTitle>Survey Not Started</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              This survey will be available starting{" "}
-              {new Date(survey.startDate).toLocaleDateString()}
-            </CardDescription>
-            <Button className="mt-4 w-full" onClick={() => router.push("/")}>
-              Go to Home
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <StatusMessage
+        icon={Clock}
+        title="Survey Not Started"
+        description={`This survey will be available starting ${new Date(survey.startDate).toLocaleDateString()}`}
+        buttons={
+          <Button className="mt-4 w-full" onClick={() => router.push("/")}>
+            Go to Home
+          </Button>
+        }
+      />
     );
   }
 
   // Ended state
   if (status === "ended") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <XCircle className="h-5 w-5" />
-              <CardTitle>Survey Ended</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              This survey is no longer accepting responses.
-            </CardDescription>
+      <StatusMessage
+        icon={XCircle}
+        title="Survey Ended"
+        description="This survey is no longer accepting responses."
+        buttons={
+          <>
             {survey?.allowLiveResults && (
               <Button
                 className="mt-4 w-full"
@@ -290,28 +314,21 @@ export default function SurveyPage() {
             >
               Go to Home
             </Button>
-          </CardContent>
-        </Card>
-      </div>
+          </>
+        }
+      />
     );
   }
 
   // Already submitted state
   if (status === "already_submitted") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <div className="flex items-center gap-2 text-blue-600">
-              <Info className="h-5 w-5" />
-              <CardTitle>Already Submitted</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              You have already submitted a response to this survey. Multiple
-              submissions are not allowed.
-            </CardDescription>
+      <StatusMessage
+        icon={Info}
+        title="Already Submitted"
+        description="You have already submitted a response to this survey. Multiple submissions are not allowed."
+        buttons={
+          <>
             {survey?.allowLiveResults && (
               <Button
                 className="mt-4 w-full"
@@ -327,28 +344,22 @@ export default function SurveyPage() {
             >
               Go to Home
             </Button>
-          </CardContent>
-        </Card>
-      </div>
+          </>
+        }
+      />
     );
   }
 
   // Submitted state
   if (status === "submitted") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <div className="flex items-center gap-2 text-green-600">
-              <CheckCircle2 className="h-5 w-5" />
-              <CardTitle>Response Submitted!</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              Thank you for completing this survey. Your response has been
-              recorded.
-            </CardDescription>
+      <StatusMessage
+        icon={CheckCircle2}
+        title="Response Submitted!"
+        description="Thank you for completing this survey. Your response has been recorded."
+        iconColor="text-primary"
+        buttons={
+          <>
             {survey?.allowLiveResults && (
               <Button
                 className="mt-4 w-full"
@@ -364,22 +375,16 @@ export default function SurveyPage() {
             >
               Go to Home
             </Button>
-          </CardContent>
-        </Card>
-      </div>
+          </>
+        }
+      />
     );
   }
 
   // Active survey - render form
-  if (!survey || !questions) {
+  if (!survey || parsedQuestions.length === 0) {
     return null;
   }
-
-  // Parse questions with configs
-  const parsedQuestions: BaseQuestion[] = questions.map((q) => ({
-    ...q,
-    config: JSON.parse(q.config),
-  }));
 
   return (
     <div className="min-h-screen bg-background py-8 px-4">
