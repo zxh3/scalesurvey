@@ -4,19 +4,19 @@ A minimalist survey application that enables users to create and manage live sur
 
 ## Features
 
-- ✅ **No Sign-Up Required** - Create surveys instantly without authentication
-- ✅ **5 Question Types** - Single choice, multiple choice, text, star rating, and numeric scale
-- ✅ **Drag-and-Drop** - Reorder questions easily during survey creation
-- ✅ **Local Survey Storage** - Browser stores created surveys for easy access
-- ✅ **My Surveys Page** - Manage all your surveys without remembering admin codes
-- ✅ **Edit Draft Surveys** - Modify drafts before publishing with full question management
-- ✅ **Admin Access** - Receive a secret code for survey management
-- ✅ **Live Results** - Optional real-time results viewing for participants
-- ✅ **Survey Scheduling** - Configure start and end dates
-- ✅ **Draft & Publish** - Save surveys as drafts and publish when ready
-- ✅ **CSV Export** - Download survey responses
-- ✅ **Dark Mode** - Full dark mode support
-- ✅ **Real-time Updates** - Live response updates using Convex subscriptions
+- **No Sign-Up Required** - Create surveys instantly without authentication
+- **5 Question Types** - Single choice, multiple choice, text, star rating, and numeric scale
+- **Drag-and-Drop** - Reorder questions easily during survey creation
+- **Local Survey Storage** - Browser stores created surveys for easy access
+- **My Surveys Page** - Manage all your surveys without remembering admin codes
+- **Edit Draft Surveys** - Modify drafts before publishing with full question management
+- **Admin Access** - Receive a secret code for survey management
+- **Live Results** - Optional real-time results viewing for participants
+- **Survey Scheduling** - Configure start and end dates
+- **Draft & Publish** - Save surveys as drafts and publish when ready
+- **CSV Export** - Download survey responses
+- **Dark Mode** - Full dark mode support
+- **Real-time Updates** - Live response updates using Convex subscriptions
 
 ## Tech Stack
 
@@ -78,11 +78,9 @@ convex/              # Backend (Convex)
 
 See [CLAUDE.md](./CLAUDE.md) for detailed development guidelines and architecture documentation.
 
-## Current Status
+## Status
 
-🎉 **MVP Complete!** All core features are fully implemented and tested.
-
-See [TODO.md](./TODO.md) for detailed completion status.
+All core features are fully implemented and production-ready.
 
 ## License
 
