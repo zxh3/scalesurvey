@@ -1,16 +1,21 @@
-"use client";
-
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { Hero } from "@/components/landing/hero";
+import { Features } from "@/components/landing/features";
+import { HowItWorks } from "@/components/landing/how-it-works";
+import { Footer } from "@/components/landing/footer";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Home() {
-  const tasks = useQuery(api.tasks.get);
-
   return (
-    <main>
-      {tasks?.map(({ _id, text }) => (
-        <div key={_id}>{text}</div>
-      ))}
-    </main>
+    <div className="min-h-screen flex flex-col">
+      {/* Theme toggle in top right corner */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+
+      <Hero />
+      <Features />
+      <HowItWorks />
+      <Footer />
+    </div>
   );
 }
