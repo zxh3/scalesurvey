@@ -6,7 +6,10 @@ import { api } from "../../../convex/_generated/api";
 import { SuccessModal } from "@/components/survey-builder/success-modal";
 import { SiteHeader } from "@/components/site-header";
 import { saveSurvey } from "@/lib/db";
-import { SurveyForm, SurveyFormData } from "@/components/survey-builder/survey-form";
+import {
+  SurveyForm,
+  SurveyFormData,
+} from "@/components/survey-builder/survey-form";
 
 export default function CreateSurveyPage() {
   const createSurvey = useMutation(api.surveys.create);
@@ -71,7 +74,7 @@ export default function CreateSurveyPage() {
         endDate: data.endDate?.getTime(),
       });
 
-      const surveyId = result.surveyId as string;
+      const surveyId = result.surveyId;
       const adminCode = result.adminCode;
 
       // 2. Save all questions
