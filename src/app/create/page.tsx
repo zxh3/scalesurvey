@@ -161,7 +161,7 @@ export default function CreateSurveyPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
+      <SiteHeader centerTitle />
       <div className="container max-w-5xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-8">
