@@ -13,9 +13,14 @@ function generateAdminCode(): string {
   return code;
 }
 
-// Generate a short URL key
+// Generate a short URL key (6 characters, alphanumeric only)
 function generateSurveyKey(): string {
-  return nanoid(8); // 8 character nanoid
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let key = "";
+  for (let i = 0; i < 6; i++) {
+    key += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return key;
 }
 
 // Create a new survey
