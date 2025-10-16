@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -26,11 +27,12 @@ export function SuccessModal({
   adminCode,
   surveyKey,
 }: SuccessModalProps) {
+  const router = useRouter();
   const [copiedAdmin, setCopiedAdmin] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
 
-  const surveyUrl = `${surveyKey}.scalesurvey.com`;
-  const fullUrl = `https://${surveyUrl}`;
+  const surveyUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/survey/${surveyKey}`;
+  const displayUrl = `${typeof window !== 'undefined' ? window.location.host : ''}/survey/${surveyKey}`;
 
   const copyToClipboard = async (text: string, type: "admin" | "url") => {
     try {
@@ -45,6 +47,10 @@ export function SuccessModal({
     } catch (error) {
       console.error("Failed to copy:", error);
     }
+  };
+
+  const handleManageSurvey = () => {
+    router.push(`/admin/${adminCode}`);
   };
 
   return (
@@ -101,14 +107,14 @@ export function SuccessModal({
             <div className="flex gap-2">
               <Input
                 id="survey-url"
-                value={surveyUrl}
+                value={displayUrl}
                 readOnly
                 className="font-mono"
               />
               <Button
                 size="icon"
                 variant="outline"
-                onClick={() => copyToClipboard(fullUrl, "url")}
+                onClick={() => copyToClipboard(surveyUrl, "url")}
               >
                 {copiedUrl ? (
                   <Check className="h-4 w-4 text-green-600" />
@@ -127,10 +133,7 @@ export function SuccessModal({
             <Button variant="outline" className="flex-1" onClick={onClose}>
               Create Another Survey
             </Button>
-            <Button className="flex-1" onClick={() => {
-              // TODO: Navigate to admin view
-              onClose();
-            }}>
+            <Button className="flex-1" onClick={handleManageSurvey}>
               Manage Survey
             </Button>
           </div>

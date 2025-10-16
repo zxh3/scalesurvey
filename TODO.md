@@ -110,13 +110,13 @@
 
 ## Phase 5: Additional Question Types (Medium Priority)
 
-### 5.1 Text Question Type
+### 5.1 Text Question Type ✅
 **New Files:**
-- `src/components/questions/text/text-editor.tsx`
-- `src/components/questions/text/text-response.tsx`
-- `src/components/questions/text/text-results.tsx`
-- `src/components/questions/text/index.ts`
-- Register in `src/lib/questions/init.ts`
+- ✅ `src/components/questions/text/text-editor.tsx`
+- ✅ `src/components/questions/text/text-response.tsx`
+- ✅ `src/components/questions/text/text-results.tsx`
+- ✅ `src/components/questions/text/index.ts`
+- ✅ Register in `src/lib/questions/init.ts`
 
 ### 5.2 Rating Question Type
 **New Files:**
