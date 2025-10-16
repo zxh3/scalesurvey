@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { useLiveQuery } from "dexie-react-hooks";
-import { ExternalLink, Settings, Trash2 } from "lucide-react";
+import { CheckCircle2, Copy, ExternalLink, Settings, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { SiteHeader } from "@/components/site-header";
@@ -34,6 +34,7 @@ export default function MySurveysPage() {
   const [surveyToDelete, setSurveyToDelete] = useState<LocalSurvey | null>(
     null,
   );
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const getStatusColor = (status: LocalSurvey["status"]) => {
     switch (status) {
@@ -57,6 +58,16 @@ export default function MySurveysPage() {
 
   const handleAccessSurvey = async (surveyId: string) => {
     await updateSurveyAccess(surveyId);
+  };
+
+  const handleCopyAdminCode = async (adminCode: string) => {
+    try {
+      await navigator.clipboard.writeText(adminCode);
+      setCopiedCode(adminCode);
+      setTimeout(() => setCopiedCode(null), 2000);
+    } catch (error) {
+      console.error("Failed to copy admin code:", error);
+    }
   };
 
   return (
@@ -121,8 +132,27 @@ export default function MySurveysPage() {
                           addSuffix: true,
                         })}
                       </div>
-                      <div className="font-mono text-xs bg-muted px-2 py-1 rounded inline-block">
-                        Survey Key: {survey.key}
+                      <div className="flex gap-2 items-center">
+                        <span className="font-mono text-xs bg-muted px-2 py-1 rounded inline-block">
+                          Survey Key: {survey.key}
+                        </span>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <span className="font-mono text-xs bg-muted px-2 py-1 rounded inline-flex items-center gap-2">
+                          Admin Code: {survey.adminCode}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => handleCopyAdminCode(survey.adminCode)}
+                        >
+                          {copiedCode === survey.adminCode ? (
+                            <CheckCircle2 className="h-3 w-3 text-green-600" />
+                          ) : (
+                            <Copy className="h-3 w-3" />
+                          )}
+                        </Button>
                       </div>
                     </div>
                     <div className="flex gap-2">

@@ -11,7 +11,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getSurveyBySurveyId, saveSurvey, updateSurveyAccess } from "@/lib/db";
 import { api } from "../../../../convex/_generated/api";
 
 export default function AdminDashboardPage() {
@@ -45,6 +46,38 @@ export default function AdminDashboardPage() {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+
+  // Save survey to local database when accessed via admin code
+  useEffect(() => {
+    const saveSurveyToLocal = async () => {
+      if (!survey) return;
+
+      try {
+        // Check if survey already exists in local DB
+        const existingSurvey = await getSurveyBySurveyId(survey._id);
+
+        if (existingSurvey) {
+          // Survey exists, just update the last accessed time
+          await updateSurveyAccess(survey._id);
+        } else {
+          // Survey doesn't exist, save it
+          await saveSurvey({
+            surveyId: survey._id,
+            adminCode: adminCode,
+            key: survey.key,
+            title: survey.title,
+            description: survey.description,
+            status: survey.status,
+            createdAt: survey._creationTime,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to save survey to local database:", error);
+      }
+    };
+
+    saveSurveyToLocal();
+  }, [survey, adminCode]);
 
   if (survey === undefined) {
     return (
