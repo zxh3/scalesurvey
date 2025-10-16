@@ -41,18 +41,20 @@ export function SortableQuestionCard({
   const EditorComponent = questionDef.EditorComponent;
 
   return (
-    <div ref={setNodeRef} style={style} className="relative">
+    <div ref={setNodeRef} style={style} className="flex gap-3 items-start">
       {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
-        className="absolute -left-8 top-4 cursor-grab active:cursor-grabbing"
+        className="pt-4 cursor-grab active:cursor-grabbing flex-shrink-0"
       >
         <GripVertical className="h-5 w-5 text-muted-foreground" />
       </div>
 
       {/* Question Editor */}
-      <EditorComponent question={question} onChange={onUpdate} onDelete={onDelete} />
+      <div className="flex-1 min-w-0">
+        <EditorComponent question={question} onChange={onUpdate} onDelete={onDelete} />
+      </div>
     </div>
   );
 }
