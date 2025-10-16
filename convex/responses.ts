@@ -6,7 +6,6 @@ export const submit = mutation({
   args: {
     surveyId: v.id("surveys"),
     answers: v.string(), // JSON stringified array of answers
-    participantFingerprint: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     // Verify survey exists and is published
@@ -29,27 +28,10 @@ export const submit = mutation({
       throw new Error("Survey has ended");
     }
 
-    // Check for duplicate submission if fingerprint is provided
-    if (args.participantFingerprint) {
-      const existingResponse = await ctx.db
-        .query("responses")
-        .withIndex("by_survey_fingerprint", (q) =>
-          q
-            .eq("surveyId", args.surveyId)
-            .eq("participantFingerprint", args.participantFingerprint)
-        )
-        .first();
-
-      if (existingResponse) {
-        throw new Error("You have already submitted a response to this survey");
-      }
-    }
-
     // Submit response
     const responseId = await ctx.db.insert("responses", {
       surveyId: args.surveyId,
       answers: args.answers,
-      participantFingerprint: args.participantFingerprint,
       submittedAt: now,
     });
 

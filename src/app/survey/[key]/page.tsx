@@ -72,7 +72,9 @@ export default function SurveyPage() {
   );
   const submitResponse = useMutation(api.responses.submit);
 
-  const [status, setStatus] = useState<SurveyStatus>("loading");
+  const [userStatus, setUserStatus] = useState<
+    "submitted" | "already_submitted" | null
+  >(null);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -87,7 +89,7 @@ export default function SurveyPage() {
     }));
   }, [questions]);
 
-  // Check if user has already submitted
+  // Check if user has already submitted (external system sync - valid useEffect)
   useEffect(() => {
     const checkSubmission = async () => {
       if (!survey || survey === null) return;
@@ -98,7 +100,7 @@ export default function SurveyPage() {
 
         const submitted = await hasSubmitted(survey._id, fp);
         if (submitted) {
-          setStatus("already_submitted");
+          setUserStatus("already_submitted");
         }
       } catch (error) {
         console.error("Failed to check submission:", error);
@@ -108,43 +110,24 @@ export default function SurveyPage() {
     checkSubmission();
   }, [survey]);
 
-  useEffect(() => {
-    if (survey === undefined) {
-      setStatus("loading");
-      return;
-    }
+  // Compute status from survey data (no useEffect needed!)
+  const status = useMemo<SurveyStatus>(() => {
+    // User-initiated statuses take precedence
+    if (userStatus === "submitted") return "submitted";
+    if (userStatus === "already_submitted") return "already_submitted";
 
-    if (survey === null) {
-      setStatus("not_found");
-      return;
-    }
-
-    if (survey.status === "draft") {
-      setStatus("draft");
-      return;
-    }
-
-    if (survey.status === "closed") {
-      setStatus("ended");
-      return;
-    }
+    // Survey data-driven statuses
+    if (survey === undefined) return "loading";
+    if (survey === null) return "not_found";
+    if (survey.status === "draft") return "draft";
+    if (survey.status === "closed") return "ended";
 
     const now = Date.now();
-    if (survey.startDate && now < survey.startDate) {
-      setStatus("not_started");
-      return;
-    }
+    if (survey.startDate && now < survey.startDate) return "not_started";
+    if (survey.endDate && now > survey.endDate) return "ended";
 
-    if (survey.endDate && now > survey.endDate) {
-      setStatus("ended");
-      return;
-    }
-
-    // Don't override already_submitted or submitted status
-    if (status !== "already_submitted" && status !== "submitted") {
-      setStatus("active");
-    }
-  }, [survey, status]);
+    return "active";
+  }, [survey, userStatus]);
 
   const handleAnswerChange = (questionId: string, value: unknown) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -201,13 +184,12 @@ export default function SurveyPage() {
       await submitResponse({
         surveyId: survey._id,
         answers: JSON.stringify(formattedAnswers),
-        participantFingerprint: fingerprint,
       });
 
       // Record submission in local DB for future visits
       await recordLocalSubmission();
 
-      setStatus("submitted");
+      setUserStatus("submitted");
       // Keep button disabled - status change will hide the form
     } catch (error) {
       console.error("Failed to submit response:", error);
@@ -220,7 +202,7 @@ export default function SurveyPage() {
       if (isDuplicateError) {
         // Treat duplicate submission as success
         await recordLocalSubmission();
-        setStatus("submitted");
+        setUserStatus("submitted");
       } else {
         // Show error for other types of failures
         setIsSubmitting(false);

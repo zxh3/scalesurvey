@@ -58,15 +58,11 @@ export default defineSchema({
   responses: defineTable({
     surveyId: v.id("surveys"),
 
-    // Anonymous participant identifier (for preventing duplicates)
-    participantFingerprint: v.optional(v.string()),
-
     // Answers stored as JSON string
     answers: v.string(), // JSON stringified array of answers
 
     // Metadata
     submittedAt: v.number(),
   })
-    .index("by_survey", ["surveyId"])
-    .index("by_survey_fingerprint", ["surveyId", "participantFingerprint"]),
+    .index("by_survey", ["surveyId"]),
 });

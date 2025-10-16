@@ -210,6 +210,46 @@ Browser-based storage for survey metadata using Dexie (IndexedDB wrapper):
 7. **Use context7 and chrome-devtools MCP servers** to fetch up-to-date documentation and test UI in the browser
 8. **Maintain TODO.md as a work log**: Update it as you work on tasks to keep track of progress
 9. **Commit frequently**: Make git commits whenever you complete a logical unit of work
+10. **Minimize useEffect usage**: Follow React best practices to avoid unnecessary Effects (see [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect))
+
+### React Effect Guidelines
+
+**Avoid useEffect when you can:**
+- **Transform data during render** instead of syncing state in Effects
+- **Use event handlers** for user interactions instead of Effects
+- **Use useMemo/useCallback** for expensive calculations or derived state
+- **Lift state up** or use external stores instead of chaining Effects
+- **Initialize once** in the component body, not in useEffect
+
+**Valid use cases for useEffect:**
+- Synchronizing with external systems (DOM, network, third-party libraries)
+- Fetching data when a component mounts (though consider RSC or React Query)
+- Setting up subscriptions (WebSocket, real-time updates)
+- Running analytics/logging after render
+
+**Common anti-patterns to avoid:**
+```typescript
+// ❌ Bad: Using Effect to update state based on props/state
+useEffect(() => {
+  setFullName(firstName + ' ' + lastName);
+}, [firstName, lastName]);
+
+// ✅ Good: Calculate during render
+const fullName = firstName + ' ' + lastName;
+
+// ❌ Bad: Using Effect for event handling
+useEffect(() => {
+  if (isSubmitted) {
+    navigate('/success');
+  }
+}, [isSubmitted]);
+
+// ✅ Good: Handle in event handler
+const handleSubmit = () => {
+  setIsSubmitted(true);
+  navigate('/success');
+};
+```
 
 ## Work Log Guidelines
 
