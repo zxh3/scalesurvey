@@ -34,7 +34,7 @@ export function QuestionBuilder({ questions, onChange }: QuestionBuilderProps) {
       type,
       title: "",
       description: "",
-      required: false,
+      optional: false, // Questions are required by default
       order: questions.length,
       config: questionDef.defaultConfig(),
     };

@@ -16,7 +16,7 @@ export interface BaseQuestion {
   type: QuestionType;
   title: string;
   description?: string;
-  required: boolean;
+  optional: boolean; // Changed from 'required' to 'optional'
   order: number;
   config: QuestionConfig;
 }

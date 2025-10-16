@@ -28,12 +28,12 @@ export const ratingQuestionType: QuestionTypeDefinition = {
     const config = question.config as RatingConfig;
     const rating = value as number;
 
-    // Check required
-    if (question.required && !rating) {
+    // Check if required (not optional)
+    if (!question.optional && !rating) {
       return { valid: false, error: "This question is required" };
     }
 
-    // If not required and no value, that's ok
+    // If optional and no value, that's ok
     if (!rating) {
       return { valid: true };
     }

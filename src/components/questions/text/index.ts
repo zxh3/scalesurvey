@@ -29,12 +29,12 @@ export const textQuestionType: QuestionTypeDefinition = {
     const config = question.config as TextConfig;
     const textValue = (value as string) || "";
 
-    // Check required
-    if (question.required && !textValue.trim()) {
+    // Check if required (not optional)
+    if (!question.optional && !textValue.trim()) {
       return { valid: false, error: "This question is required" };
     }
 
-    // If not required and no value, that's ok
+    // If optional and no value, that's ok
     if (!textValue.trim()) {
       return { valid: true };
     }

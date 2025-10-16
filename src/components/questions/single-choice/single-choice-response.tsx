@@ -20,7 +20,7 @@ export function SingleChoiceResponse({
       <div className="space-y-2">
         <h3 className="text-lg font-medium">
           {question.title}
-          {question.required && <span className="text-destructive ml-1">*</span>}
+          {!question.optional && <span className="text-destructive ml-1">*</span>}
         </h3>
         {question.description && (
           <p className="text-sm text-muted-foreground">

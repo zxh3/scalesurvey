@@ -31,12 +31,12 @@ export const singleChoiceDefinition: QuestionTypeDefinition = {
   validate: (question, value) => {
     const config = question.config as SingleChoiceConfig;
 
-    // Check required
-    if (question.required && !value) {
+    // Check if required (not optional)
+    if (!question.optional && !value) {
       return { valid: false, error: "This question is required" };
     }
 
-    // If not required and no value, that's ok
+    // If optional and no value, that's ok
     if (!value) {
       return { valid: true };
     }

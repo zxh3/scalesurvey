@@ -31,12 +31,12 @@ export const scaleQuestionType: QuestionTypeDefinition = {
     const config = question.config as ScaleConfig;
     const scaleValue = value as number;
 
-    // Check required
-    if (question.required && scaleValue === undefined) {
+    // Check if required (not optional)
+    if (!question.optional && scaleValue === undefined) {
       return { valid: false, error: "This question is required" };
     }
 
-    // If not required and no value, that's ok
+    // If optional and no value, that's ok
     if (scaleValue === undefined) {
       return { valid: true };
     }

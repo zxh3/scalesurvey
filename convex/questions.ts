@@ -15,7 +15,7 @@ export const add = mutation({
     ),
     title: v.string(),
     description: v.optional(v.string()),
-    required: v.optional(v.boolean()),
+    optional: v.optional(v.boolean()), // Changed from 'required' to 'optional'
     config: v.string(), // JSON stringified config
   },
   handler: async (ctx, args) => {
@@ -38,7 +38,7 @@ export const add = mutation({
       type: args.type,
       title: args.title,
       description: args.description,
-      required: args.required ?? false,
+      optional: args.optional ?? false, // Default to false (required by default)
       order,
       config: args.config,
     });
@@ -59,7 +59,7 @@ export const update = mutation({
     adminCode: v.string(),
     title: v.optional(v.string()),
     description: v.optional(v.string()),
-    required: v.optional(v.boolean()),
+    optional: v.optional(v.boolean()), // Changed from 'required' to 'optional'
     config: v.optional(v.string()),
   },
   handler: async (ctx, args) => {

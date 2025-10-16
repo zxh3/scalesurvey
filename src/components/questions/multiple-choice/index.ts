@@ -32,7 +32,7 @@ export const multipleChoiceDefinition: QuestionTypeDefinition = {
     const config = question.config as MultipleChoiceConfig;
     const selectedOptions = (value as string[]) || [];
 
-    // Check min selections first (applies even if not required)
+    // Check min selections first (applies even if optional)
     if (config.minSelections && selectedOptions.length < config.minSelections) {
       return {
         valid: false,
@@ -42,12 +42,12 @@ export const multipleChoiceDefinition: QuestionTypeDefinition = {
       };
     }
 
-    // Check required (if no minSelections, use standard required check)
-    if (question.required && !config.minSelections && selectedOptions.length === 0) {
+    // Check if required (not optional) - if no minSelections, use standard check
+    if (!question.optional && !config.minSelections && selectedOptions.length === 0) {
       return { valid: false, error: "This question is required" };
     }
 
-    // If not required, no minSelections, and no selections, that's ok
+    // If optional, no minSelections, and no selections, that's ok
     if (selectedOptions.length === 0) {
       return { valid: true };
     }

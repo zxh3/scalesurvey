@@ -16,7 +16,7 @@ export function TextResponse({
     <div className="space-y-2">
       <Label htmlFor={`question-${question._id}`}>
         {question.title}
-        {question.required && <span className="text-destructive ml-1">*</span>}
+        {!question.optional && <span className="text-destructive ml-1">*</span>}
       </Label>
       {question.description && (
         <p className="text-sm text-muted-foreground">{question.description}</p>
@@ -28,7 +28,7 @@ export function TextResponse({
         placeholder={config.placeholder || "Enter your answer"}
         maxLength={config.maxLength}
         rows={4}
-        required={question.required}
+        required={!question.optional}
       />
       {config.maxLength && (
         <p className="text-xs text-muted-foreground text-right">

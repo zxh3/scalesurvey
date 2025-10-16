@@ -247,12 +247,12 @@ export function MultipleChoiceEditor({
           {/* Required Toggle */}
           <div className="flex items-center justify-between">
             <Label htmlFor={`required-${question._id}`}>
-              Required question
+              Optional question
             </Label>
             <Switch
               id={`required-${question._id}`}
-              checked={question.required}
-              onCheckedChange={(checked) => onChange({ required: checked })}
+              checked={question.optional}
+              onCheckedChange={(checked) => onChange({ optional: checked })}
             />
           </div>
         </div>

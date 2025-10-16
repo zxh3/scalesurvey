@@ -46,7 +46,7 @@ export default defineSchema({
     ),
     title: v.string(),
     description: v.optional(v.string()),
-    required: v.boolean(),
+    optional: v.boolean(), // Changed from 'required' to 'optional'
 
     // Order
     order: v.number(),

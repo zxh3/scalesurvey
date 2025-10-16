@@ -23,7 +23,7 @@ export function ScaleResponse({
     <div className="space-y-3">
       <Label>
         {question.title}
-        {question.required && <span className="text-destructive ml-1">*</span>}
+        {!question.optional && <span className="text-destructive ml-1">*</span>}
       </Label>
       {question.description && (
         <p className="text-sm text-muted-foreground">{question.description}</p>

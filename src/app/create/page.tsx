@@ -134,7 +134,7 @@ export default function CreateSurveyPage() {
           type: question.type,
           title: question.title,
           description: question.description,
-          required: question.required,
+          optional: question.optional,
           config: JSON.stringify(question.config),
         });
       }
