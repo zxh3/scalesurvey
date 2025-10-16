@@ -123,7 +123,7 @@ export function HowItWorks() {
 
                     {/* Content card */}
                     <motion.div
-                      className="flex-1 rounded-2xl border border-border/50 bg-background/50 backdrop-blur-sm p-6 group-hover:border-primary/30 transition-all duration-500"
+                      className="relative flex-1 rounded-2xl border border-border/50 bg-background/50 backdrop-blur-sm p-6 group-hover:border-primary/30 transition-all duration-500 overflow-hidden"
                       whileHover={{ y: -4 }}
                       transition={{ duration: 0.3 }}
                     >
@@ -154,8 +154,8 @@ export function HowItWorks() {
                       </div>
 
                       {/* Decorative gradient on hover */}
-                      <motion.div
-                        className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${step.gradient} rounded-b-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                      <div
+                        className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${step.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
                       />
                     </motion.div>
                   </div>
