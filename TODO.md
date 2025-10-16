@@ -145,9 +145,37 @@
 - ✅ `src/components/questions/scale/index.ts`
 - ✅ Register in `src/lib/questions/init.ts`
 
-## Phase 6: Preview Mode for Question Editors
+## Phase 6: Response Validation ✅ COMPLETED
 
-### 6.1 Add Preview Tab to Question Editors ⏳ IN PROGRESS
+### 6.1 Comprehensive Validation System ✅
+**Goal:** Validate survey responses with type-specific rules
+
+**Architecture:**
+- Added `ValidationResult` interface (valid: boolean, error?: string)
+- Added `validate` function to `QuestionTypeDefinition` interface
+- Each question type implements its own validation logic
+
+**Validation Rules:**
+- **Single Choice:** Required check, valid option ID check
+- **Multiple Choice:** Required, min/max selections, valid option IDs
+- **Text:** Required, max length validation
+- **Rating:** Required, range validation (1 to maxRating)
+- **Scale:** Required, range validation (minValue to maxValue)
+
+**Modified Files:**
+- `src/types/questions.ts` - Added ValidationResult and validate to interface
+- `src/components/questions/*/index.ts` - Added validate function to all 5 types
+- `src/app/survey/[key]/page.tsx` - Updated to use type-specific validation
+
+**Benefits:**
+- Centralized validation logic per question type
+- Type-safe validation
+- Extensible for new question types
+- Fixes min/max selection validation bug in multiple choice
+
+## Phase 7: Preview Mode for Question Editors ⏳ PLANNED
+
+### 7.1 Add Preview Tab to Question Editors
 **Goal:** Allow survey creators to preview how questions will appear to participants
 
 **Approach:** Tab-based editor with Edit/Preview tabs
@@ -190,6 +218,20 @@
 ## Work Log
 
 This section tracks recent development work. Update as you work on the project.
+
+### 2025-01-16: Validation System & Question Type Badge
+
+**Completed:**
+- ✅ Added question type badge to all editor components (icon + label)
+- ✅ Implemented comprehensive validation system for all question types
+- ✅ Added ValidationResult interface and validate function to type registry
+- ✅ Fixed min/max selection validation for multiple choice questions
+- ✅ Type-specific validation with custom error messages
+- ✅ Updated survey response page to use new validation system
+
+**Commits:**
+- `1b1500b` - Add question type badge to all editor components
+- `12491e4` - Add comprehensive validation system for all question types
 
 ### 2025-01-16: UI Polish & Navigation
 
