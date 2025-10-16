@@ -18,6 +18,7 @@ import {
   Send,
 } from "lucide-react";
 import { useState } from "react";
+import { SiteHeader } from "@/components/site-header";
 
 export default function AdminDashboardPage() {
   const params = useParams();
@@ -82,7 +83,7 @@ export default function AdminDashboardPage() {
       case "draft":
         return <Badge variant="secondary">Draft</Badge>;
       case "published":
-        return <Badge variant="default" className="bg-green-600">Published</Badge>;
+        return <Badge variant="default">Published</Badge>;
       case "closed":
         return <Badge variant="outline">Closed</Badge>;
     }
@@ -137,8 +138,9 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
-      <div className="container max-w-5xl mx-auto">
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <div className="container max-w-5xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
@@ -242,14 +244,28 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {survey.status === "draft" && (
-              <Button
-                className="w-full"
-                onClick={handlePublish}
-                disabled={isPublishing || !questions || questions.length === 0}
-              >
-                <Send className="h-4 w-4 mr-2" />
-                {isPublishing ? "Publishing..." : "Publish Survey"}
-              </Button>
+              <>
+                <Button
+                  className="w-full"
+                  variant="outline"
+                  onClick={() => router.push(`/admin/${adminCode}/edit`)}
+                >
+                  Edit Survey
+                </Button>
+                <Button
+                  className="w-full"
+                  onClick={handlePublish}
+                  disabled={isPublishing || !questions || questions.length === 0}
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  {isPublishing ? "Publishing..." : "Publish Survey"}
+                </Button>
+                {questions && questions.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    Add at least one question before publishing
+                  </p>
+                )}
+              </>
             )}
 
             {survey.status === "published" && (

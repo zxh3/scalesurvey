@@ -144,7 +144,7 @@ export default function LiveResultsPage() {
             <Badge variant="outline" className="text-base">
               {responses.length} {responses.length === 1 ? "Response" : "Responses"}
             </Badge>
-            <Badge variant="default" className="bg-green-600 text-base">
+            <Badge variant="default" className="text-base">
               Live Updates
             </Badge>
           </div>

@@ -3,32 +3,15 @@
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useRouter } from "next/navigation";
-import { SurveyBasicInfo } from "@/components/survey-builder/survey-basic-info";
-import { QuestionBuilder } from "@/components/survey-builder/question-builder";
-import { SurveySettings } from "@/components/survey-builder/survey-settings";
-import { Button } from "@/components/ui/button";
-import { BaseQuestion } from "@/types/questions";
-import { Save, Send } from "lucide-react";
 import { SuccessModal } from "@/components/survey-builder/success-modal";
 import { SiteHeader } from "@/components/site-header";
-
-// Import question registry initialization
-import "@/lib/questions/init";
+import { saveSurvey } from "@/lib/db";
+import { SurveyForm, SurveyFormData } from "@/components/survey-builder/survey-form";
 
 export default function CreateSurveyPage() {
-  const router = useRouter();
   const createSurvey = useMutation(api.surveys.create);
   const addQuestion = useMutation(api.questions.add);
   const publishSurvey = useMutation(api.surveys.publish);
-
-  // Survey state
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [questions, setQuestions] = useState<BaseQuestion[]>([]);
-  const [allowLiveResults, setAllowLiveResults] = useState(false);
-  const [startDate, setStartDate] = useState<Date | undefined>();
-  const [endDate, setEndDate] = useState<Date | undefined>();
 
   // Success modal state
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -39,47 +22,27 @@ export default function CreateSurveyPage() {
   } | null>(null);
 
   const [isSaving, setIsSaving] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  const validateQuestions = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    questions.forEach((question, index) => {
-      if (!question.title.trim()) {
-        errors[`question-${index}-title`] = "Question title is required";
-      }
-
-      if (question.type === "single_choice" || question.type === "multiple_choice") {
-        const config = question.config as any;
-        if (!config.options || config.options.length < 2) {
-          errors[`question-${index}-options`] = "At least 2 options are required";
-        } else {
-          const emptyOptions = config.options.filter((opt: any) => !opt.text.trim());
-          if (emptyOptions.length > 0) {
-            errors[`question-${index}-options`] = "All options must have text";
-          }
-        }
-      }
-    });
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSaveDraft = async () => {
-    if (!title.trim()) {
-      alert("Please enter a survey title");
-      return;
-    }
-
+  const handleSaveDraft = async (data: SurveyFormData) => {
     setIsSaving(true);
     try {
       const result = await createSurvey({
-        title: title.trim(),
-        description: description.trim() || undefined,
-        allowLiveResults,
-        startDate: startDate?.getTime(),
-        endDate: endDate?.getTime(),
+        title: data.title,
+        description: data.description || undefined,
+        allowLiveResults: data.allowLiveResults,
+        startDate: data.startDate?.getTime(),
+        endDate: data.endDate?.getTime(),
+      });
+
+      // Store in IndexedDB
+      await saveSurvey({
+        surveyId: result.surveyId as string,
+        adminCode: result.adminCode,
+        key: result.key,
+        title: data.title,
+        description: data.description || undefined,
+        status: "draft",
+        createdAt: Date.now(),
       });
 
       setCreatedSurvey({
@@ -96,38 +59,23 @@ export default function CreateSurveyPage() {
     }
   };
 
-  const handlePublish = async () => {
-    if (!title.trim()) {
-      alert("Please enter a survey title");
-      return;
-    }
-
-    if (questions.length === 0) {
-      alert("Please add at least one question before publishing");
-      return;
-    }
-
-    if (!validateQuestions()) {
-      alert("Please fix validation errors before publishing");
-      return;
-    }
-
+  const handlePublish = async (data: SurveyFormData) => {
     setIsSaving(true);
     try {
       // 1. Create the survey
       const result = await createSurvey({
-        title: title.trim(),
-        description: description.trim() || undefined,
-        allowLiveResults,
-        startDate: startDate?.getTime(),
-        endDate: endDate?.getTime(),
+        title: data.title,
+        description: data.description || undefined,
+        allowLiveResults: data.allowLiveResults,
+        startDate: data.startDate?.getTime(),
+        endDate: data.endDate?.getTime(),
       });
 
       const surveyId = result.surveyId as string;
       const adminCode = result.adminCode;
 
       // 2. Save all questions
-      for (const question of questions) {
+      for (const question of data.questions) {
         await addQuestion({
           surveyId,
           adminCode,
@@ -143,6 +91,17 @@ export default function CreateSurveyPage() {
       await publishSurvey({
         surveyId,
         adminCode,
+      });
+
+      // 4. Store in IndexedDB
+      await saveSurvey({
+        surveyId,
+        adminCode,
+        key: result.key,
+        title: data.title,
+        description: data.description || undefined,
+        status: "published",
+        createdAt: Date.now(),
       });
 
       setCreatedSurvey({
@@ -173,52 +132,13 @@ export default function CreateSurveyPage() {
           </p>
         </div>
 
-        <div className="space-y-8">
-          {/* Basic Info */}
-          <SurveyBasicInfo
-            title={title}
-            description={description}
-            onTitleChange={setTitle}
-            onDescriptionChange={setDescription}
-          />
-
-          {/* Question Builder */}
-          <QuestionBuilder
-            questions={questions}
-            onChange={setQuestions}
-          />
-
-          {/* Settings */}
-          <SurveySettings
-            allowLiveResults={allowLiveResults}
-            startDate={startDate}
-            endDate={endDate}
-            onAllowLiveResultsChange={setAllowLiveResults}
-            onStartDateChange={setStartDate}
-            onEndDateChange={setEndDate}
-          />
-
-          {/* Action Buttons */}
-          <div className="flex gap-4 justify-end pb-8">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={handleSaveDraft}
-              disabled={isSaving}
-            >
-              <Save className="h-4 w-4 mr-2" />
-              Save as Draft
-            </Button>
-            <Button
-              size="lg"
-              onClick={handlePublish}
-              disabled={isSaving}
-            >
-              <Send className="h-4 w-4 mr-2" />
-              Publish Survey
-            </Button>
-          </div>
-        </div>
+        {/* Survey Form */}
+        <SurveyForm
+          mode="create"
+          onSaveDraft={handleSaveDraft}
+          onPublish={handlePublish}
+          isSaving={isSaving}
+        />
       </div>
 
       {/* Success Modal */}

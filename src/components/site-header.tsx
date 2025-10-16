@@ -8,7 +8,20 @@ export function SiteHeader() {
         <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
           <span className="text-lg font-bold">Scale Survey</span>
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-6">
+            <Link href="/create" className="text-sm font-medium hover:underline underline-offset-4">
+              Create
+            </Link>
+            <Link href="/surveys" className="text-sm font-medium hover:underline underline-offset-4">
+              My Surveys
+            </Link>
+            <Link href="/access" className="text-sm font-medium hover:underline underline-offset-4">
+              Access
+            </Link>
+          </nav>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
