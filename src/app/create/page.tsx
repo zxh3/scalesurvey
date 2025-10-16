@@ -29,6 +29,7 @@ export default function CreateSurveyPage() {
   const handleSaveDraft = async (data: SurveyFormData) => {
     setIsSaving(true);
     try {
+      // 1. Create the survey
       const result = await createSurvey({
         title: data.title,
         description: data.description || undefined,
@@ -37,10 +38,26 @@ export default function CreateSurveyPage() {
         endDate: data.endDate?.getTime(),
       });
 
-      // Store in IndexedDB
+      const surveyId = result.surveyId;
+      const adminCode = result.adminCode;
+
+      // 2. Save all questions
+      for (const question of data.questions) {
+        await addQuestion({
+          surveyId,
+          adminCode,
+          type: question.type,
+          title: question.title,
+          description: question.description,
+          optional: question.optional,
+          config: JSON.stringify(question.config),
+        });
+      }
+
+      // 3. Store in IndexedDB
       await saveSurvey({
-        surveyId: result.surveyId as string,
-        adminCode: result.adminCode,
+        surveyId,
+        adminCode,
         key: result.key,
         title: data.title,
         description: data.description || undefined,
@@ -49,8 +66,8 @@ export default function CreateSurveyPage() {
       });
 
       setCreatedSurvey({
-        surveyId: result.surveyId as string,
-        adminCode: result.adminCode,
+        surveyId,
+        adminCode,
         key: result.key,
       });
       setShowSuccessModal(true);
