@@ -39,6 +39,7 @@ export function SurveyBasicInfo({
             onChange={(e) => onTitleChange(e.target.value)}
             placeholder="Enter survey title"
             maxLength={200}
+            autoComplete="off"
           />
         </div>
         <div className="space-y-2">
@@ -50,6 +51,7 @@ export function SurveyBasicInfo({
             placeholder="Add a description to provide context for participants"
             rows={3}
             maxLength={1000}
+            autoComplete="off"
           />
         </div>
       </CardContent>
