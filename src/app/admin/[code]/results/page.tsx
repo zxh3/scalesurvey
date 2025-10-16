@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import { AlertCircle, ArrowLeft, Download, XCircle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -144,8 +145,9 @@ export default function ResultsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
-      <div className="container max-w-5xl mx-auto">
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <div className="container max-w-5xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-6">
           <Button
@@ -154,7 +156,7 @@ export default function ResultsPage() {
             onClick={() => router.push(`/admin/${adminCode}`)}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
+            Back
           </Button>
 
           <div className="flex items-center justify-between mb-4">

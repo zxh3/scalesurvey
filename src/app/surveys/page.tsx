@@ -103,27 +103,27 @@ export default function MySurveysPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {surveys.map((survey) => (
-              <Card key={survey.id} className="group hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
+              <Card key={survey.id} className="group hover:shadow-md transition-shadow flex flex-col">
+                <CardContent className="p-5 flex flex-col flex-1">
+                  <div className="space-y-3 flex flex-col flex-1">
                     {/* Header Section */}
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-lg font-semibold truncate">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <h3 className="text-base font-semibold truncate">
                             {survey.title}
                           </h3>
                           <Badge
                             variant={getStatusColor(survey.status)}
-                            className="shrink-0"
+                            className="shrink-0 text-xs"
                           >
                             {survey.status}
                           </Badge>
                         </div>
                         {survey.description && (
-                          <p className="text-sm text-muted-foreground line-clamp-2">
+                          <p className="text-xs text-muted-foreground line-clamp-2">
                             {survey.description}
                           </p>
                         )}
@@ -131,71 +131,65 @@ export default function MySurveysPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="shrink-0 h-9 w-9 text-muted-foreground hover:text-destructive"
+                        className="shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive"
                         onClick={() => setSurveyToDelete(survey)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
 
                     {/* Info Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t">
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span className="font-medium">Survey Key:</span>
-                        <code className="px-2 py-1 bg-muted rounded font-mono">
+                    <div className="space-y-2 pt-2 border-t text-xs flex-1">
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <span className="font-medium shrink-0">Key:</span>
+                        <code className="px-1.5 py-0.5 bg-muted rounded font-mono text-[10px] truncate">
                           {survey.key}
                         </code>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span className="font-medium">Admin Code:</span>
-                        <code className="px-2 py-1 bg-muted rounded font-mono">
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <span className="font-medium shrink-0">Code:</span>
+                        <code className="px-1.5 py-0.5 bg-muted rounded font-mono text-[10px] truncate">
                           {survey.adminCode}
                         </code>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 shrink-0"
+                          className="h-5 w-5 shrink-0 ml-auto"
                           onClick={() => handleCopyAdminCode(survey.adminCode)}
                         >
                           {copiedCode === survey.adminCode ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                            <CheckCircle2 className="h-3 w-3 text-green-600" />
                           ) : (
-                            <Copy className="h-3.5 w-3.5" />
+                            <Copy className="h-3 w-3" />
                           )}
                         </Button>
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        <span className="font-medium">Created:</span>{" "}
-                        {formatDistanceToNow(survey.createdAt, {
-                          addSuffix: true,
-                        })}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        <span className="font-medium">Last accessed:</span>{" "}
-                        {formatDistanceToNow(survey.lastAccessedAt, {
-                          addSuffix: true,
-                        })}
+                      <div className="text-muted-foreground pt-1">
+                        <div>Created {formatDistanceToNow(survey.createdAt, { addSuffix: true })}</div>
+                        <div className="text-[10px] opacity-70">
+                          Accessed {formatDistanceToNow(survey.lastAccessedAt, { addSuffix: true })}
+                        </div>
                       </div>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2 pt-3 border-t">
+                    <div className="flex flex-col gap-2 pt-2 border-t mt-auto">
                       <Button
                         variant="default"
                         size="sm"
-                        className="flex-1"
+                        className="w-full"
                         asChild
                         onClick={() => handleAccessSurvey(survey.surveyId)}
                       >
                         <Link href={`/admin/${survey.adminCode}`}>
-                          <Settings className="h-4 w-4 mr-2" />
+                          <Settings className="h-3.5 w-3.5 mr-2" />
                           Admin Panel
                         </Link>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="flex-1"
+                        className="w-full"
                         asChild
                         onClick={() => handleAccessSurvey(survey.surveyId)}
                       >
@@ -204,7 +198,7 @@ export default function MySurveysPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <ExternalLink className="h-4 w-4 mr-2" />
+                          <ExternalLink className="h-3.5 w-3.5 mr-2" />
                           View Survey
                         </Link>
                       </Button>

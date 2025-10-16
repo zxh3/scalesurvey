@@ -296,18 +296,16 @@ export default function AdminDashboardPage() {
           <CardHeader>
             <CardTitle className="text-lg">Actions</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="flex flex-wrap gap-3">
             {survey.status === "draft" && (
               <>
                 <Button
-                  className="w-full"
                   variant="outline"
                   onClick={() => router.push(`/admin/${adminCode}/edit`)}
                 >
                   Edit Survey
                 </Button>
                 <Button
-                  className="w-full"
                   onClick={handlePublish}
                   disabled={
                     isPublishing || !questions || questions.length === 0
@@ -317,7 +315,7 @@ export default function AdminDashboardPage() {
                   {isPublishing ? "Publishing..." : "Publish Survey"}
                 </Button>
                 {questions && questions.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center">
+                  <p className="text-sm text-muted-foreground w-full text-center">
                     Add at least one question before publishing
                   </p>
                 )}
@@ -327,7 +325,6 @@ export default function AdminDashboardPage() {
             {survey.status === "published" && (
               <>
                 <Button
-                  className="w-full"
                   onClick={() => router.push(`/admin/${adminCode}/results`)}
                 >
                   <BarChart3 className="h-4 w-4 mr-2" />
@@ -336,7 +333,6 @@ export default function AdminDashboardPage() {
 
                 <Button
                   variant="destructive"
-                  className="w-full"
                   onClick={handleClose}
                   disabled={isClosing}
                 >
@@ -348,7 +344,6 @@ export default function AdminDashboardPage() {
 
             {survey.status === "closed" && (
               <Button
-                className="w-full"
                 onClick={() => router.push(`/admin/${adminCode}/results`)}
               >
                 <BarChart3 className="h-4 w-4 mr-2" />
@@ -358,7 +353,6 @@ export default function AdminDashboardPage() {
 
             <Button
               variant="outline"
-              className="w-full"
               onClick={() => router.push("/")}
             >
               Go to Home
