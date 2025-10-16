@@ -127,30 +127,13 @@ export function HowItWorks() {
                       whileHover={{ y: -4 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors duration-300">
-                            {step.title}
-                          </h3>
-                          <p className="text-muted-foreground leading-relaxed">
-                            {step.description}
-                          </p>
-                        </div>
-
-                        {/* Arrow indicator for non-last items */}
-                        {index < steps.length - 1 && (
-                          <motion.div
-                            className="hidden sm:block"
-                            animate={{ y: [0, 5, 0] }}
-                            transition={{
-                              duration: 2,
-                              repeat: Infinity,
-                              ease: "easeInOut",
-                            }}
-                          >
-                            <ArrowRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-primary/50 transition-colors" />
-                          </motion.div>
-                        )}
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors duration-300">
+                          {step.title}
+                        </h3>
+                        <p className="text-muted-foreground leading-relaxed">
+                          {step.description}
+                        </p>
                       </div>
 
                       {/* Decorative gradient on hover */}
