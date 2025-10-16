@@ -15,7 +15,7 @@ export function Footer() {
           </div>
           <div className="flex gap-6">
             <Link
-              href="https://github.com/anthropics/scalesurvey"
+              href="https://github.com/zxh3/scalesurvey"
               className="hover:text-foreground transition-colors"
               target="_blank"
               rel="noopener noreferrer"
