@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { ArrowLeft, Lock, XCircle } from "lucide-react";
+import { ArrowLeft, Lock, Radio, XCircle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -143,7 +143,7 @@ export default function LiveResultsPage() {
 
           <div className="mb-4">
             <h1 className="text-3xl font-bold">{survey.title}</h1>
-            <p className="text-muted-foreground mt-1">Live Results</p>
+            <p className="text-muted-foreground mt-1">Survey Results</p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -151,8 +151,16 @@ export default function LiveResultsPage() {
               {responses.length}{" "}
               {responses.length === 1 ? "Response" : "Responses"}
             </Badge>
-            <Badge variant="default" className="text-base">
-              Live Updates
+            <Badge
+              variant="secondary"
+              className="text-base flex items-center gap-1.5 relative overflow-visible"
+            >
+              <Radio className="h-3.5 w-3.5 animate-pulse" />
+              Live
+              <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
             </Badge>
           </div>
         </div>
