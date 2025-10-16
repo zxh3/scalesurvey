@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { nanoid } from "nanoid";
 import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -24,21 +23,6 @@ interface QuestionBuilderProps {
 
 export function QuestionBuilder({ questions, onChange }: QuestionBuilderProps) {
   const availableTypes = questionTypeRegistry.getAll();
-  const lastQuestionRef = useRef<HTMLDivElement>(null);
-  const prevQuestionCountRef = useRef(questions.length);
-
-  useEffect(() => {
-    // If a new question was added, scroll to it smoothly
-    if (questions.length > prevQuestionCountRef.current && lastQuestionRef.current) {
-      setTimeout(() => {
-        lastQuestionRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest'
-        });
-      }, 100);
-    }
-    prevQuestionCountRef.current = questions.length;
-  }, [questions.length]);
 
   const addQuestion = (type: QuestionType) => {
     const questionDef = questionTypeRegistry.get(type);
@@ -116,17 +100,13 @@ export function QuestionBuilder({ questions, onChange }: QuestionBuilderProps) {
               strategy={verticalListSortingStrategy}
             >
               <div className="space-y-4">
-                {questions.map((question, index) => (
-                  <div
+                {questions.map((question) => (
+                  <SortableQuestionCard
                     key={question._id}
-                    ref={index === questions.length - 1 ? lastQuestionRef : null}
-                  >
-                    <SortableQuestionCard
-                      question={question}
-                      onUpdate={(updates) => updateQuestion(question._id, updates)}
-                      onDelete={() => deleteQuestion(question._id)}
-                    />
-                  </div>
+                    question={question}
+                    onUpdate={(updates) => updateQuestion(question._id, updates)}
+                    onDelete={() => deleteQuestion(question._id)}
+                  />
                 ))}
               </div>
             </SortableContext>
