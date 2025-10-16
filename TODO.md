@@ -2,12 +2,21 @@
 
 ## Current Status Summary
 
-### ✅ Completed - MVP FEATURE COMPLETE! 🎉
+### ✅ Completed - MVP FEATURE COMPLETE WITH ENHANCEMENTS! 🎉
 - Landing page with hero, features, how-it-works, footer
 - Dark mode with theme toggle
 - Animated grid background
 - Database schema (surveys, questions, responses)
 - Convex backend mutations (surveys, questions CRUD)
+- **Local browser storage with Dexie (IndexedDB):**
+  - Survey metadata stored in browser
+  - "My Surveys" page for managing surveys
+  - Delete surveys from local storage
+  - Last accessed tracking and sorting
+- **Edit functionality for draft surveys:**
+  - Full question management (add/update/delete/reorder)
+  - Shared SurveyForm component (DRY principle)
+  - Change tracking (save button disabled until changes)
 - Modular question type system with registry
 - **All 5 question types implemented:**
   - Single choice
@@ -25,6 +34,7 @@
 - Admin results view with CSV export
 - Live results for participants (/survey/[key]/results)
 - Real-time updates using Convex subscriptions
+- Consistent navigation with site header
 
 ---
 
@@ -106,8 +116,15 @@
 - ✅ Export functionality (CSV)
 - ✅ No responses state
 
-### 3.4 Create Edit Survey Page ⏭️ SKIPPED
-**Reason:** Editing published surveys is complex and not needed for MVP. Surveys can be drafted and published once.
+### 3.4 Create Edit Survey Page ✅ COMPLETED
+**File:** `src/app/admin/[code]/edit/page.tsx`
+- ✅ Edit draft surveys before publishing
+- ✅ Load existing survey and questions
+- ✅ Full question management (add/update/delete/reorder)
+- ✅ Shared SurveyForm component for DRY principle
+- ✅ Comprehensive question sync logic
+- ✅ Change tracking (save button disabled until changes)
+- ✅ Cannot edit published/closed surveys (enforced)
 
 ## Phase 4: Live Results ✅ COMPLETED
 
@@ -173,9 +190,50 @@
 - Extensible for new question types
 - Fixes min/max selection validation bug in multiple choice
 
-## Phase 7: Preview Mode for Question Editors ⏳ PLANNED
+## Phase 7: Local Storage & Survey Management ✅ COMPLETED
 
-### 7.1 Add Preview Tab to Question Editors
+### 7.1 Dexie Integration ✅
+**File:** `src/lib/db.ts`
+- ✅ Install and configure Dexie (IndexedDB wrapper)
+- ✅ Define LocalSurvey schema (surveyId, adminCode, key, title, status, timestamps)
+- ✅ Create helper functions (saveSurvey, getSurveyByKey, getAllSurveys, etc.)
+- ✅ Index on surveyId, adminCode, key, lastAccessedAt, createdAt
+- ✅ Store surveys after creation or publish
+
+### 7.2 My Surveys Page ✅
+**File:** `src/app/surveys/page.tsx`
+- ✅ List all surveys stored in browser
+- ✅ Use useLiveQuery for reactive updates
+- ✅ Sort by last accessed (most recent first)
+- ✅ Display survey cards with title, status, description
+- ✅ Format timestamps with date-fns (relative time)
+- ✅ Action buttons: View Survey, Admin Panel, Delete
+- ✅ Delete confirmation dialog
+- ✅ Empty state when no surveys
+
+### 7.3 Edit Draft Surveys ✅
+**File:** `src/app/admin/[code]/edit/page.tsx`
+- ✅ Load existing survey and questions using useMemo
+- ✅ Reuse SurveyForm component in edit mode
+- ✅ Comprehensive question sync logic:
+  - Detect new questions (not in existingQuestionIds)
+  - Delete removed questions
+  - Update existing questions
+  - Reorder all questions
+- ✅ Cannot edit published/closed surveys
+- ✅ Redirect to admin panel after save
+
+### 7.4 Code Refactoring (DRY) ✅
+**Files:** `src/components/survey-builder/survey-form.tsx`, `src/app/create/page.tsx`
+- ✅ Extract shared form logic into SurveyForm component
+- ✅ Support both create and edit modes with props
+- ✅ Reduce create page from 258 to 156 lines (40% reduction)
+- ✅ Mode-specific buttons (Save Draft/Publish vs Save Changes)
+- ✅ Change tracking in edit mode
+
+## Phase 8: Preview Mode for Question Editors ⏳ PLANNED
+
+### 8.1 Add Preview Tab to Question Editors
 **Goal:** Allow survey creators to preview how questions will appear to participants
 
 **Approach:** Tab-based editor with Edit/Preview tabs
@@ -229,10 +287,6 @@ This section tracks recent development work. Update as you work on the project.
 - ✅ Type-specific validation with custom error messages
 - ✅ Updated survey response page to use new validation system
 
-**Commits:**
-- `1b1500b` - Add question type badge to all editor components
-- `12491e4` - Add comprehensive validation system for all question types
-
 ### 2025-01-16: UI Polish & Navigation
 
 **Completed:**
@@ -243,12 +297,36 @@ This section tracks recent development work. Update as you work on the project.
 - ✅ Added smooth scrolling when new questions are added
 - ✅ Updated documentation (CLAUDE.md, README.md, TODO.md)
 
-**Commits:**
-- `fe7517f` - Add site header with navigation to home
-- `156941c` - Improve site header spacing and add hover effect
-- `6a7902d` - Standardize header across all pages with centered title option
-- `87d91c2` - Simplify header with equal margins on both sides
-- `4cd954b` - Add smooth scrolling when new questions are added
+### 2025-01-16: Local Storage, My Surveys, and Edit Functionality
+
+**Completed:**
+- ✅ Installed and configured Dexie for local IndexedDB storage
+- ✅ Created database schema for storing survey metadata (src/lib/db.ts)
+- ✅ Implemented "My Surveys" page with reactive queries using useLiveQuery
+- ✅ Added delete confirmation dialog for surveys
+- ✅ Fixed My Surveys page links (View Survey and Admin Panel routes)
+- ✅ Created edit page for draft surveys (src/app/admin/[code]/edit/page.tsx)
+- ✅ Implemented comprehensive question sync logic (add/update/delete/reorder)
+- ✅ Refactored create and edit pages to use shared SurveyForm component
+- ✅ Eliminated ~100 lines of duplicate code (40% reduction in create page)
+- ✅ Added SiteHeader to admin dashboard for consistent navigation
+- ✅ Fixed badge colors across admin and results pages (removed hardcoded bg-green-600)
+- ✅ Added navigation links to header (Create, My Surveys, Access)
+
+**Files Created:**
+- `src/lib/db.ts` - Dexie database setup (75 lines)
+- `src/app/surveys/page.tsx` - My Surveys listing page (173 lines)
+- `src/app/admin/[code]/edit/page.tsx` - Edit draft surveys (233 lines)
+- `src/components/survey-builder/survey-form.tsx` - Shared form component (244 lines)
+
+**Files Modified:**
+- `src/app/create/page.tsx` - Refactored to use SurveyForm (258→156 lines, 40% reduction)
+- `src/app/admin/[code]/page.tsx` - Added SiteHeader, Edit button, fixed badge
+- `src/components/site-header.tsx` - Added navigation links
+- `src/app/survey/[key]/results/page.tsx` - Fixed badge color
+- `package.json` - Added dexie, dexie-react-hooks, date-fns
+- `CLAUDE.md` - Updated with new features and architecture patterns
+- `README.md` - Updated features and tech stack
 
 ### 2025-01-15: Question Types Implementation
 
@@ -258,11 +336,3 @@ This section tracks recent development work. Update as you work on the project.
 - ✅ Implemented scale question type (custom numeric range)
 - ✅ Fixed success modal URL display and navigation
 - ✅ All 5 question types working in survey builder
-
-**Commits:**
-- `e27babd` - Add text question type and improve success modal
-- `72a6e81` - Add rating question type and fix text question type
-- `10f28f2` - Add scale question type
-- `a2be4a0` - Update TODO with MVP completion status
-- `a913d7e` - Clean up TODO.md - remove future phases
-- `baace89` - Remove 'Not Yet Implemented' section from TODO

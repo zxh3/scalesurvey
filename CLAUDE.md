@@ -9,8 +9,11 @@ Scale Survey is a minimalist survey application that enables users to create and
 **Key Features:**
 - Anonymous survey creation - no account required
 - Survey owners receive a secret admin code upon creation
+- Local browser storage of created surveys (IndexedDB via Dexie)
+- "My Surveys" page for easy access to created surveys without admin codes
 - 5 question types: Single Choice, Multiple Choice, Text, Rating (stars), Scale (numeric)
 - Drag-and-drop question reordering
+- Edit draft surveys before publishing
 - Survey owners can save drafts and publish when ready
 - Configurable start/end dates for each survey
 - Optional live results viewing for participants
@@ -24,12 +27,14 @@ Scale Survey is a minimalist survey application that enables users to create and
 - **Runtime:** Bun (package manager and runtime)
 - **Language:** TypeScript (strict mode enabled)
 - **Database:** Convex (real-time backend with TypeScript)
+- **Local Storage:** Dexie (IndexedDB wrapper for client-side survey storage)
 - **Styling:** Tailwind CSS v4
 - **UI Library:** shadcn/ui (New York style)
 - **Forms:** react-hook-form + zod validation
 - **Charts:** recharts
 - **Icons:** lucide-react
 - **Drag and Drop:** @dnd-kit
+- **Date Utilities:** date-fns
 
 ## Development Commands
 
@@ -82,15 +87,24 @@ src/
    app/              # Next.js App Router pages and layouts
       page.tsx       # Landing page
       create/        # Survey creation page
+      surveys/       # "My Surveys" listing page
       access/        # Admin access page
       survey/[key]/  # Participant survey pages
-      admin/[code]/  # Admin dashboard and results
+      admin/[code]/  # Admin dashboard, edit, and results
+         page.tsx    # Admin dashboard
+         edit/       # Edit draft surveys
+         results/    # Results view with CSV export
       layout.tsx     # Root layout with font configuration
       globals.css    # Global styles and Tailwind config
    components/
       ui/            # shadcn/ui components (auto-generated)
       landing/       # Landing page components
       survey-builder/ # Survey creation components
+         survey-form.tsx # Shared form component (create/edit)
+         survey-basic-info.tsx
+         question-builder.tsx
+         survey-settings.tsx
+         success-modal.tsx
       questions/     # Question type components (modular)
          single-choice/
          multiple-choice/
@@ -102,6 +116,7 @@ src/
    hooks/           # Custom React hooks
       use-mobile.ts
    lib/
+      db.ts         # Dexie database setup for local storage
       questions/    # Question type registry system
       utils.ts      # cn() utility for class merging
    types/
@@ -174,6 +189,16 @@ Convex is a real-time backend with TypeScript-first schema definitions:
 - Use `useQuery` and `useMutation` hooks from `convex/react`
 - Admin code authentication for mutations
 
+### Local Storage (Dexie)
+
+Browser-based storage for survey metadata using Dexie (IndexedDB wrapper):
+- Database setup in `src/lib/db.ts`
+- Stores survey metadata (ID, admin code, key, title, status, timestamps)
+- Enables "My Surveys" page without requiring admin codes
+- Uses `useLiveQuery` hook from `dexie-react-hooks` for reactive queries
+- Automatically tracks last accessed timestamp for sorting
+- Survey data persists in browser across sessions
+
 ## Development Guidelines
 
 1. **Always use Bun** as the package manager (not npm or yarn)
@@ -222,9 +247,13 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Current Project Status
 
-The MVP is **100% feature complete**! All core features are implemented:
+The MVP is **100% feature complete** with recent enhancements! All core features are implemented:
 - ✅ Survey creation with 5 question types
 - ✅ Drag-and-drop question reordering
+- ✅ Local browser storage of created surveys (Dexie/IndexedDB)
+- ✅ "My Surveys" page for managing surveys
+- ✅ Edit draft surveys with full question management
+- ✅ Shared SurveyForm component (DRY principle)
 - ✅ Participant survey response pages
 - ✅ Admin dashboard with results
 - ✅ Live results with real-time updates
@@ -233,3 +262,48 @@ The MVP is **100% feature complete**! All core features are implemented:
 - ✅ Responsive header with navigation
 
 See TODO.md for detailed completion status of all phases.
+
+## Code Architecture Patterns
+
+### Shared Components (DRY Principle)
+
+The project uses shared components to eliminate code duplication:
+
+**SurveyForm Component** (`src/components/survey-builder/survey-form.tsx`):
+- Reusable form for both create and edit modes
+- Props-based configuration (mode: "create" | "edit")
+- Handles form state, validation, and rendering
+- Mode-specific buttons (Save Draft/Publish vs Save Changes)
+- Change tracking for edit mode (disables save until changes made)
+
+**Usage:**
+```typescript
+// Create mode
+<SurveyForm
+  mode="create"
+  onSaveDraft={handleSaveDraft}
+  onPublish={handlePublish}
+  isSaving={isSaving}
+/>
+
+// Edit mode
+<SurveyForm
+  mode="edit"
+  initialData={existingData}
+  onSave={handleSave}
+  isSaving={isSaving}
+/>
+```
+
+### Edit Page Question Synchronization
+
+The edit page (`src/app/admin/[code]/edit/page.tsx`) implements comprehensive question sync logic:
+
+1. **Load existing data** using `useMemo` for efficient re-rendering
+2. **Detect changes** by comparing question IDs
+3. **Delete removed questions** from database
+4. **Add new questions** to database
+5. **Update existing questions** in database
+6. **Reorder all questions** based on current order
+
+This ensures the database accurately reflects user changes while maintaining data integrity.

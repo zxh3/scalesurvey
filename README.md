@@ -7,6 +7,9 @@ A minimalist survey application that enables users to create and manage live sur
 - ✅ **No Sign-Up Required** - Create surveys instantly without authentication
 - ✅ **5 Question Types** - Single choice, multiple choice, text, star rating, and numeric scale
 - ✅ **Drag-and-Drop** - Reorder questions easily during survey creation
+- ✅ **Local Survey Storage** - Browser stores created surveys for easy access
+- ✅ **My Surveys Page** - Manage all your surveys without remembering admin codes
+- ✅ **Edit Draft Surveys** - Modify drafts before publishing with full question management
 - ✅ **Admin Access** - Receive a secret code for survey management
 - ✅ **Live Results** - Optional real-time results viewing for participants
 - ✅ **Survey Scheduling** - Configure start and end dates
@@ -21,10 +24,12 @@ A minimalist survey application that enables users to create and manage live sur
 - **Runtime:** Bun
 - **Language:** TypeScript (strict mode)
 - **Database:** Convex (real-time backend)
+- **Local Storage:** Dexie (IndexedDB wrapper)
 - **Styling:** Tailwind CSS v4
 - **UI Library:** shadcn/ui (New York style)
 - **Icons:** lucide-react
 - **Drag & Drop:** @dnd-kit
+- **Date Utilities:** date-fns
 
 ## Getting Started
 
@@ -48,14 +53,16 @@ src/
 ├── app/              # Next.js App Router pages
 │   ├── page.tsx      # Landing page
 │   ├── create/       # Survey creation
+│   ├── surveys/      # My Surveys listing
 │   ├── access/       # Admin access
 │   ├── survey/[key]/ # Participant views
-│   └── admin/[code]/ # Admin dashboard
+│   └── admin/[code]/ # Admin dashboard, edit, results
 ├── components/
 │   ├── questions/    # Question type components (modular)
-│   ├── survey-builder/ # Survey creation UI
+│   ├── survey-builder/ # Survey creation UI (shared form)
 │   └── landing/      # Landing page components
 ├── lib/
+│   ├── db.ts         # Dexie database setup
 │   └── questions/    # Question type registry
 └── types/
     └── questions.ts  # Type definitions
