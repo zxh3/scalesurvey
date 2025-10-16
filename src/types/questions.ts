@@ -66,6 +66,7 @@ export interface QuestionEditorProps {
   question: BaseQuestion;
   onChange: (updates: Partial<BaseQuestion>) => void;
   onDelete: () => void;
+  questionDef?: QuestionTypeDefinition;
 }
 
 export interface QuestionResponseProps {

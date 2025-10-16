@@ -145,6 +145,36 @@
 - ✅ `src/components/questions/scale/index.ts`
 - ✅ Register in `src/lib/questions/init.ts`
 
+## Phase 6: Preview Mode for Question Editors
+
+### 6.1 Add Preview Tab to Question Editors ⏳ IN PROGRESS
+**Goal:** Allow survey creators to preview how questions will appear to participants
+
+**Approach:** Tab-based editor with Edit/Preview tabs
+- Edit tab: Current editor UI (configuration)
+- Preview tab: Shows ResponseComponent with live interaction
+
+**Implementation Plan:**
+1. ⏳ Install shadcn/ui Tabs component if needed
+2. ⏳ Create reusable `QuestionEditorLayout` wrapper component
+   - File: `src/components/survey-builder/question-editor-layout.tsx`
+   - Wraps editor content in Tabs (Edit/Preview)
+   - Handles preview state management
+   - Renders ResponseComponent in preview tab
+3. ⏳ Refactor all 5 question editor components to use the layout:
+   - `src/components/questions/single-choice/single-choice-editor.tsx`
+   - `src/components/questions/multiple-choice/multiple-choice-editor.tsx`
+   - `src/components/questions/text/text-editor.tsx`
+   - `src/components/questions/rating/rating-editor.tsx`
+   - `src/components/questions/scale/scale-editor.tsx`
+
+**Benefits:**
+- Reuses existing ResponseComponent (DRY)
+- Live preview with actual interaction
+- Participants see exactly what creators see
+- Clean, familiar tab interface
+- Works on all screen sizes
+
 ---
 
 ## Technical Notes

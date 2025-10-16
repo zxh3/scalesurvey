@@ -53,7 +53,12 @@ export function SortableQuestionCard({
 
       {/* Question Editor */}
       <div className="flex-1 min-w-0">
-        <EditorComponent question={question} onChange={onUpdate} onDelete={onDelete} />
+        <EditorComponent
+          question={question}
+          onChange={onUpdate}
+          onDelete={onDelete}
+          questionDef={questionDef}
+        />
       </div>
     </div>
   );

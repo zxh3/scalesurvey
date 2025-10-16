@@ -69,6 +69,7 @@ export function SingleChoiceEditor({
   question,
   onChange,
   onDelete,
+  questionDef,
 }: QuestionEditorProps) {
   const config = question.config as SingleChoiceConfig;
 
@@ -129,6 +130,14 @@ export function SingleChoiceEditor({
 
   return (
     <Card className="p-4 space-y-4">
+      {/* Question Type Badge */}
+      {questionDef && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground pb-2 border-b">
+          <questionDef.icon className="h-4 w-4" />
+          <span className="font-medium">{questionDef.label}</span>
+        </div>
+      )}
+
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-4">
           {/* Question Title */}
