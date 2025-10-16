@@ -56,12 +56,12 @@ export function SurveySettings({
             {/* Start Date */}
             <div className="space-y-2">
               <Label className="text-sm text-muted-foreground">Start Date</Label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full justify-start text-left font-normal"
+                      className="flex-1 justify-start text-left font-normal"
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {startDate ? format(startDate, "PPP") : "Pick a date"}
@@ -72,7 +72,6 @@ export function SurveySettings({
                       mode="single"
                       selected={startDate}
                       onSelect={onStartDateChange}
-                      initialFocus
                     />
                   </PopoverContent>
                 </Popover>
@@ -81,6 +80,7 @@ export function SurveySettings({
                     variant="ghost"
                     size="icon"
                     onClick={() => onStartDateChange(undefined)}
+                    className="flex-shrink-0"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -91,12 +91,12 @@ export function SurveySettings({
             {/* End Date */}
             <div className="space-y-2">
               <Label className="text-sm text-muted-foreground">End Date</Label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full justify-start text-left font-normal"
+                      className="flex-1 justify-start text-left font-normal"
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {endDate ? format(endDate, "PPP") : "Pick a date"}
@@ -107,7 +107,6 @@ export function SurveySettings({
                       mode="single"
                       selected={endDate}
                       onSelect={onEndDateChange}
-                      initialFocus
                       disabled={(date) =>
                         startDate ? date < startDate : false
                       }
@@ -119,6 +118,7 @@ export function SurveySettings({
                     variant="ghost"
                     size="icon"
                     onClick={() => onEndDateChange(undefined)}
+                    className="flex-shrink-0"
                   >
                     <X className="h-4 w-4" />
                   </Button>

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { nanoid } from "nanoid";
 import { Plus, X, GripVertical } from "lucide-react";
+import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +16,54 @@ import {
   SingleChoiceConfig,
   QuestionOption,
 } from "@/types/questions";
+
+function SortableOption({
+  option,
+  index,
+  onUpdate,
+  onRemove,
+  canRemove,
+}: {
+  option: QuestionOption;
+  index: number;
+  onUpdate: (text: string) => void;
+  onRemove: () => void;
+  canRemove: boolean;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: option.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      </div>
+      <Input
+        value={option.text}
+        onChange={(e) => onUpdate(e.target.value)}
+        placeholder={`Option ${index + 1}`}
+        className="flex-1"
+      />
+      {canRemove && (
+        <Button variant="ghost" size="icon" onClick={onRemove}>
+          <X className="h-4 w-4" />
+        </Button>
+      )}
+    </div>
+  );
+}
 
 export function SingleChoiceEditor({
   question,
@@ -54,6 +104,29 @@ export function SingleChoiceEditor({
     updateConfig({ options: newOptions });
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = config.options.findIndex((opt) => opt.id === active.id);
+    const newIndex = config.options.findIndex((opt) => opt.id === over.id);
+
+    const newOptions = [...config.options];
+    const [movedOption] = newOptions.splice(oldIndex, 1);
+    newOptions.splice(newIndex, 0, movedOption);
+
+    // Update order
+    const reorderedOptions = newOptions.map((opt, index) => ({
+      ...opt,
+      order: index,
+    }));
+
+    updateConfig({ options: reorderedOptions });
+  };
+
   return (
     <Card className="p-4 space-y-4">
       <div className="flex items-start justify-between gap-4">
@@ -88,28 +161,25 @@ export function SingleChoiceEditor({
           {/* Options */}
           <div className="space-y-2">
             <Label>Answer Options</Label>
-            <div className="space-y-2">
-              {config.options.map((option, index) => (
-                <div key={option.id} className="flex items-center gap-2">
-                  <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
-                  <Input
-                    value={option.text}
-                    onChange={(e) => updateOption(option.id, e.target.value)}
-                    placeholder={`Option ${index + 1}`}
-                    className="flex-1"
-                  />
-                  {config.options.length > 2 && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeOption(option.id)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
+            <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={config.options.map((opt) => opt.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-2">
+                  {config.options.map((option, index) => (
+                    <SortableOption
+                      key={option.id}
+                      option={option}
+                      index={index}
+                      onUpdate={(text) => updateOption(option.id, text)}
+                      onRemove={() => removeOption(option.id)}
+                      canRemove={config.options.length > 2}
+                    />
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
             <Button
               variant="outline"
               size="sm"
