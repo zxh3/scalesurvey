@@ -1,8 +1,10 @@
 # Overview
 
-Scale Survey is a minimalist survey application designed to let registered users create and manage live surveys. These surveys can be distributed to anonymous participants through unique short URLs.
+Scale Survey is a minimalist survey application designed to let users create and manage live surveys. These surveys can be distributed to participants through unique short URLs.
 
 - The production website is available at [www.scalesurvey.com](https://www.scalesurvey.com)
+- No authentication required - anyone can create a survey
+- Survey creators receive a secret code upon creation for admin access to manage their survey
 - Each survey receives a dedicated short URL in the format `<survey-id>.scalesurvey.com`
 - Survey owners can choose whether participants are able to view live survey results on the survey page
 - Every survey has configurable start and end dates set before launch
