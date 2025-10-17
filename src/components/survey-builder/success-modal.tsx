@@ -3,6 +3,7 @@
 import { AlertTriangle, Check, Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { QRCodeDisplay } from "@/components/qr-code-display";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -55,7 +56,7 @@ export function SuccessModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Survey Created Successfully!</DialogTitle>
           <DialogDescription>
@@ -127,6 +128,15 @@ export function SuccessModal({
               Share this URL with participants
             </p>
           </div>
+
+          {/* QR Code */}
+          <QRCodeDisplay
+            value={surveyUrl}
+            title="Share via QR Code"
+            showUrl={false}
+            size={180}
+            downloadFileName={`survey-${surveyKey}-qr.png`}
+          />
 
           {/* Actions */}
           <div className="flex gap-3">

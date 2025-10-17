@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { QRCodeDisplay } from "@/components/qr-code-display";
 import { SiteHeader } from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,12 +23,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  getSurveyBySurveyId,
-  saveSurvey,
-  updateSurveyAccess,
-  updateSurveyStatus,
-} from "@/lib/db";
+import { getSurveyBySurveyId, saveSurvey, updateSurveyStatus } from "@/lib/db";
 import { api } from "../../../../convex/_generated/api";
 
 export default function AdminDashboardPage() {
@@ -271,6 +267,17 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
 
+        {/* QR Code */}
+        <div className="mb-6">
+          <QRCodeDisplay
+            value={surveyUrl}
+            title="Share via QR Code"
+            showUrl={false}
+            size={200}
+            downloadFileName={`survey-${survey.key}-qr.png`}
+          />
+        </div>
+
         {/* Schedule Info */}
         {(survey.startDate || survey.endDate) && (
           <Card className="mb-6">
@@ -356,10 +363,7 @@ export default function AdminDashboardPage() {
               </Button>
             )}
 
-            <Button
-              variant="outline"
-              onClick={() => router.push("/")}
-            >
+            <Button variant="outline" onClick={() => router.push("/")}>
               Go to Home
             </Button>
           </CardContent>

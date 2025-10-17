@@ -35,6 +35,12 @@
 - Live results for participants (/survey/[key]/results)
 - Real-time updates using Convex subscriptions
 - Consistent navigation with site header
+- **QR code functionality:**
+  - QR code generation using qrcode.react
+  - Display in success modal after survey creation
+  - Display on admin dashboard
+  - Download QR code as PNG image
+  - Responsive design with dark mode support
 
 ---
 
@@ -327,6 +333,26 @@ This section tracks recent development work. Update as you work on the project.
 - `package.json` - Added dexie, dexie-react-hooks, date-fns
 - `CLAUDE.md` - Updated with new features and architecture patterns
 - `README.md` - Updated features and tech stack
+
+### 2025-01-17: QR Code Functionality
+
+**Completed:**
+- ✅ Installed qrcode.react library for QR code generation
+- ✅ Created reusable QRCodeDisplay component with download functionality
+- ✅ Added QR code to success modal after survey creation
+- ✅ Added QR code display to admin dashboard
+- ✅ Implemented download QR code as PNG image feature
+- ✅ Canvas-based QR code rendering for easy download
+- ✅ Responsive design with dark mode support
+- ✅ White background on QR codes for scanning reliability
+
+**Files Created:**
+- `src/components/qr-code-display.tsx` - Reusable QR code component (59 lines)
+
+**Files Modified:**
+- `src/components/survey-builder/success-modal.tsx` - Added QR code display
+- `src/app/admin/[code]/page.tsx` - Added QR code to dashboard
+- `package.json` - Added qrcode.react dependency
 
 ### 2025-01-15: Question Types Implementation
 
