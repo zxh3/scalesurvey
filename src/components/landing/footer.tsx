@@ -22,12 +22,6 @@ export function Footer() {
             >
               GitHub
             </Link>
-            <Link
-              href="/docs"
-              className="hover:text-foreground transition-colors"
-            >
-              Documentation
-            </Link>
           </div>
         </div>
       </div>
